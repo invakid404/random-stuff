@@ -47,7 +47,8 @@ public:
 			this->make_set(i);
 		}
 
-		std::sort(edges.begin(), edges.end(),
+		std::sort(edges.begin(),
+				  edges.end(),
 				  [&](const auto& a, const auto& b) {
 					  return a[2] < b[2];
 				  });
@@ -65,7 +66,7 @@ public:
 		return false;
 	}
 };
-}// namespace
+} // namespace
 
 int main() {
 	std::ios_base::sync_with_stdio(false);

@@ -3,10 +3,10 @@
 #define ENDL '\n'
 
 namespace {
-template<class T>
+template <class T>
 using vec = std::vector<T>;
 
-template<class T>
+template <class T>
 using mat = vec<vec<T>>;
 
 class Solution {
@@ -15,7 +15,11 @@ public:
 
 	const vec<std::pair<int, int>> deltas = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
 
-	auto go(mat<int>& matrix, bfs_queue& q, mat<bool>& vis_self, mat<int>& dist, mat<bool>& vis_other) {
+	auto go(mat<int>& matrix,
+			bfs_queue& q,
+			mat<bool>& vis_self,
+			mat<int>& dist,
+			mat<bool>& vis_other) {
 		auto res_i = -1, res_j = -1;
 
 		if (!q.empty()) {
@@ -29,7 +33,8 @@ public:
 				auto next_i = curr_i + delta.first;
 				auto next_j = curr_j + delta.second;
 
-				if (next_i < 0 || next_i >= matrix.size() || next_j < 0 || next_j >= matrix[0].size()) {
+				if (next_i < 0 || next_i >= matrix.size() || next_j < 0
+					|| next_j >= matrix[0].size()) {
 					continue;
 				}
 
@@ -79,23 +84,31 @@ public:
 
 		while (!start_queue.empty() || !target_queue.empty()) {
 			int res_i, res_j;
-			std::tie(res_i, res_j) = go(matrix, start_queue, start_visited,
-										start_distance, target_visited);
+			std::tie(res_i, res_j) = go(matrix,
+										start_queue,
+										start_visited,
+										start_distance,
+										target_visited);
 			if (res_i != -1 && res_j != -1) {
-				return 1 + start_distance[res_i][res_j] + target_distance[res_i][res_j];
+				return 1 + start_distance[res_i][res_j]
+					   + target_distance[res_i][res_j];
 			}
 
-			std::tie(res_i, res_j) = go(matrix, target_queue, target_visited,
-										target_distance, start_visited);
+			std::tie(res_i, res_j) = go(matrix,
+										target_queue,
+										target_visited,
+										target_distance,
+										start_visited);
 			if (res_i != -1 && res_j != -1) {
-				return 1 + start_distance[res_i][res_j] + target_distance[res_i][res_j];
+				return 1 + start_distance[res_i][res_j]
+					   + target_distance[res_i][res_j];
 			}
 		}
 
 		return -1;
 	}
 };
-}// namespace
+} // namespace
 
 int main() {
 	std::ios_base::sync_with_stdio(false);

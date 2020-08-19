@@ -5,10 +5,10 @@
 namespace {
 class Solution {
 public:
-	template<class T>
+	template <class T>
 	using vec = std::vector<T>;
 
-	template<class T>
+	template <class T>
 	using mat = vec<vec<T>>;
 
 	auto solve(std::vector<int>& prices, int k) {
@@ -49,7 +49,7 @@ public:
 		return max_without[k][n - 1];
 	}
 };
-}// namespace
+} // namespace
 
 int main() {
 	std::ios_base::sync_with_stdio(false);

@@ -5,10 +5,10 @@
 namespace {
 class Solution {
 public:
-	template<class T>
+	template <class T>
 	using vec = std::vector<T>;
 
-	template<class T>
+	template <class T>
 	using mat = vec<vec<T>>;
 
 	auto solve(vec<int>& breakpoints) {
@@ -46,7 +46,9 @@ public:
 				auto v = std::numeric_limits<int>::max();
 				auto p = -1;
 
-				for (auto k = idx[i][j - 1]; k <= std::min(j - 1, idx[i + 1][j]); ++k) {
+				for (auto k = idx[i][j - 1];
+					 k <= std::min(j - 1, idx[i + 1][j]);
+					 ++k) {
 					auto val = dp[i][k] + dp[k + 1][j];
 					if (val < v) {
 						v = val;
@@ -62,7 +64,7 @@ public:
 		return dp[0][n - 1];
 	}
 };
-}// namespace
+} // namespace
 
 int main() {
 	std::ios_base::sync_with_stdio(false);

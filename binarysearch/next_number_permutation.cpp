@@ -39,7 +39,7 @@ public:
 		return vec_to_num(digits);
 	}
 };
-}// namespace
+} // namespace
 
 int main() {
 	std::ios_base::sync_with_stdio(false);

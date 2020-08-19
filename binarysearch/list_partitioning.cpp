@@ -26,7 +26,7 @@ public:
 		return strs;
 	}
 };
-}// namespace
+} // namespace
 
 int main() {
 	std::ios_base::sync_with_stdio(false);
@@ -48,7 +48,8 @@ int main() {
 	Solution solution;
 	auto res = solution.solve(strs);
 
-	std::copy(res.begin(), res.end(),
+	std::copy(res.begin(),
+			  res.end(),
 			  std::ostream_iterator<std::string>(std::cout, " "));
 	std::cout << ENDL;
 

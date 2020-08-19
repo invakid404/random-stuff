@@ -5,10 +5,10 @@
 namespace {
 class Solution {
 public:
-	template<class T>
+	template <class T>
 	using vec = std::vector<T>;
 
-	template<class T>
+	template <class T>
 	using mat = vec<vec<T>>;
 
 	auto solve(std::string& a, std::string& b) {
@@ -26,12 +26,13 @@ public:
 
 				if (j == 0) {
 					dp[curr_i][j] = i;
-				}
-				else if (a[j - 1] == b[i - 1]) {
+				} else if (a[j - 1] == b[i - 1]) {
 					dp[curr_i][j] = dp[prev_i][j - 1];
-				}
-				else {
-					dp[curr_i][j] = 1 + std::min({dp[prev_i][j], dp[curr_i][j - 1], dp[prev_i][j - 1]});
+				} else {
+					dp[curr_i][j] = 1
+									+ std::min({dp[prev_i][j],
+												dp[curr_i][j - 1],
+												dp[prev_i][j - 1]});
 				}
 			}
 		}
@@ -39,7 +40,7 @@ public:
 		return dp[n % 2][m];
 	}
 };
-}// namespace
+} // namespace
 
 int main() {
 	std::ios_base::sync_with_stdio(false);
