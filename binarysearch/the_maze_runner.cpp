@@ -9,17 +9,50 @@ using vec = std::vector<T>;
 template<class T>
 using mat = vec<vec<T>>;
 
-// TODO: Bidirectional BFS?
 class Solution {
 public:
-    struct State {
-        int i, j, steps;
-        State(int i, int j, int steps)
-            : i(i), j(j), steps(steps) {}
-    };
+    using bfs_queue = std::queue<std::pair<int, int>>;
 
     const vec<std::pair<int, int>> deltas = 
         {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+
+    auto go(mat<int>& matrix, bfs_queue& q, mat<bool>& vis_self, mat<int>& dist, mat<bool>& vis_other) {
+        auto res_i = -1, res_j = -1;
+        
+        if (!q.empty()) {
+            int curr_i, curr_j;
+            std::tie(curr_i, curr_j) = q.front();
+            q.pop();
+
+            vis_self[curr_i][curr_j] = true;
+
+            for (auto& delta : this->deltas) {
+                auto next_i = curr_i + delta.first;
+                auto next_j = curr_j + delta.second;
+
+                if (next_i < 0 || next_i >= matrix.size() ||
+                    next_j < 0 || next_j >= matrix[0].size()) {
+                    continue;
+                }
+
+                if (vis_self[next_i][next_j] || matrix[next_i][next_j]) {
+                    continue;
+                }
+
+                q.emplace(next_i, next_j);
+
+                vis_self[next_i][next_j] = true;
+                dist[next_i][next_j] = 1 + dist[curr_i][curr_j];
+
+                if (vis_other[next_i][next_j]) {
+                    res_i = next_i;
+                    res_j = next_j;
+                }
+            }
+        }
+
+        return std::make_pair(res_i, res_j);
+    }
 
     auto solve(mat<int>& matrix) {
         auto n = static_cast<int>(matrix.size());
@@ -33,38 +66,29 @@ public:
             return -1;
         }
 
-        std::queue<State> bfs;
-        bfs.emplace(0, 0, 1);
+        bfs_queue start_queue, target_queue;
 
-        mat<bool> visited(n, vec<bool>(m, false));
+        start_queue.emplace(0, 0);
+        target_queue.emplace(n - 1, m - 1);
 
-        while (!bfs.empty()) {
-            auto curr = bfs.front();
-            bfs.pop();
+        mat<bool> start_visited(n, vec<bool>(m, false));
+        mat<bool> target_visited(n, vec<bool>(m, false));
+        
+        start_visited[0][0] = target_visited[0][0] = true;
 
-            if (visited[curr.i][curr.j]) {
-                continue;
-            }
-            visited[curr.i][curr.j] = true;
+        mat<int> start_distance(n, vec<int>(m, 0));
+        mat<int> target_distance(n, vec<int>(m, 0));
 
-            if (matrix[curr.i][curr.j]) {
-                continue;
-            }
-
-            if (curr.i == n - 1 && curr.j == m - 1) {
-                return curr.steps;
+        while (!start_queue.empty() || !target_queue.empty()) {
+            int res_i, res_j;
+            std::tie(res_i, res_j) = go(matrix, start_queue, start_visited, start_distance, target_visited);
+            if (res_i != -1 && res_j != -1) {
+                return 1 + start_distance[res_i][res_j] + target_distance[res_i][res_j];
             }
 
-            for (auto& delta : this->deltas) {
-                auto next_i = curr.i + delta.first;
-                auto next_j = curr.j + delta.second;
-
-                if (next_i < 0 || next_i >= n ||
-                    next_j < 0 || next_j >= m) {
-                    continue;
-                }
-
-                bfs.emplace(next_i, next_j, curr.steps + 1);
+            std::tie(res_i, res_j) = go(matrix, target_queue, target_visited, target_distance, start_visited);
+            if (res_i != -1 && res_j != -1) {
+                return 1 + start_distance[res_i][res_j] + target_distance[res_i][res_j];
             }
         }
 
