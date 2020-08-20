@@ -54,14 +54,7 @@ int main() {
 	std::cin.tie(nullptr);
 	std::cout.tie(nullptr);
 
-	Tree* root = new Tree();
-	root->val = -5;
-
-	root->left = new Tree();
-	root->left->val = 90;
-
-	Solution solution;
-	std::cout << solution.solve(root) << ENDL;
+	// cba to deal with inputting a tree kekw
 
 	return 0;
 }
