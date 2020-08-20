@@ -5,7 +5,6 @@
 namespace {
 class Solution {
 public:
-// EHO!?!?!?
 #define BFS(flag)                                                             \
 	{                                                                         \
 		std::fill(visited.begin(), visited.end(), false);                     \
