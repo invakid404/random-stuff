@@ -5,53 +5,53 @@
 namespace {
 class LLNode {
 public:
-	LLNode(int val) : val(val) {}
-	~LLNode() { delete next; }
+    LLNode(int val) : val(val) {}
+    ~LLNode() { delete next; }
 
-	int val;
-	LLNode* next{};
+    int val;
+    LLNode* next{};
 };
 
 class Solution {
 public:
-	auto solve(LLNode* node) {
-		auto slow = node;
-		auto fast = node;
+    auto solve(LLNode* node) {
+        auto slow = node;
+        auto fast = node;
 
-		while (fast != nullptr && fast->next != nullptr) {
-			slow = slow->next;
-			fast = fast->next->next;
-		}
+        while (fast != nullptr && fast->next != nullptr) {
+            slow = slow->next;
+            fast = fast->next->next;
+        }
 
-		return slow->val;
-	}
+        return slow->val;
+    }
 };
 } // namespace
 
 int main() {
-	std::ios_base::sync_with_stdio(false);
-	std::cin.tie(nullptr);
-	std::cout.tie(nullptr);
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
 
-	auto fake_head = new LLNode(-1);
+    auto fake_head = new LLNode(-1);
 
-	int n;
-	std::cin >> n;
+    int n;
+    std::cin >> n;
 
-	auto it = fake_head;
-	int foo;
+    auto it = fake_head;
+    int foo;
 
-	while (n--) {
-		std::cin >> foo;
+    while (n--) {
+        std::cin >> foo;
 
-		it->next = new LLNode(foo);
-		it = it->next;
-	}
+        it->next = new LLNode(foo);
+        it = it->next;
+    }
 
-	Solution solution;
-	std::cout << solution.solve(fake_head->next) << ENDL;
+    Solution solution;
+    std::cout << solution.solve(fake_head->next) << ENDL;
 
-	delete fake_head;
+    delete fake_head;
 
-	return 0;
+    return 0;
 }

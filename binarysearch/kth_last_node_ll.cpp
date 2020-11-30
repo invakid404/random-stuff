@@ -5,56 +5,56 @@
 namespace {
 class LLNode {
 public:
-	int val;
-	LLNode* next;
+    int val;
+    LLNode* next;
 
-	LLNode(int val) : val(val) {}
+    LLNode(int val) : val(val) {}
 
-	~LLNode() { delete next; }
+    ~LLNode() { delete next; }
 };
 
 class Solution {
 public:
-	auto solve(LLNode* head, int k) {
-		auto slow = head, fast = head;
+    auto solve(LLNode* head, int k) {
+        auto slow = head, fast = head;
 
-		while (k--) {
-			fast = fast->next;
-		}
+        while (k--) {
+            fast = fast->next;
+        }
 
-		while (fast->next) {
-			slow = slow->next;
-			fast = fast->next;
-		}
+        while (fast->next) {
+            slow = slow->next;
+            fast = fast->next;
+        }
 
-		return slow->val;
-	}
+        return slow->val;
+    }
 };
 } // namespace
 
 int main() {
-	std::ios_base::sync_with_stdio(false);
-	std::cin.tie(nullptr);
-	std::cout.tie(nullptr);
+    std::ios_base::sync_with_stdio(false);
+    std::cin.tie(nullptr);
+    std::cout.tie(nullptr);
 
-	int n;
-	std::cin >> n;
+    int n;
+    std::cin >> n;
 
-	auto dummy_head = new LLNode(-1);
+    auto dummy_head = new LLNode(-1);
 
-	int foo;
-	for (auto it = dummy_head; n; --n, it = it->next) {
-		std::cin >> foo;
-		it->next = new LLNode(foo);
-	}
+    int foo;
+    for (auto it = dummy_head; n; --n, it = it->next) {
+        std::cin >> foo;
+        it->next = new LLNode(foo);
+    }
 
-	int k;
-	std::cin >> k;
+    int k;
+    std::cin >> k;
 
-	Solution solution;
-	std::cout << solution.solve(dummy_head->next, k) << ENDL;
+    Solution solution;
+    std::cout << solution.solve(dummy_head->next, k) << ENDL;
 
-	delete dummy_head;
+    delete dummy_head;
 
-	return 0;
+    return 0;
 }

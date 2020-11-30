@@ -21,7 +21,7 @@ auto solve(num x, num y) {
 
     return --y * y + x;
 }
-}  // namespace
+} // namespace
 
 int main() {
     std::ios_base::sync_with_stdio(false);
