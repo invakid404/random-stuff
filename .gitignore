@@ -7,5 +7,9 @@
 # Unignore all dirs
 !*/
 
+# Ignore object files
+*.o
+*.hi
+
 /.vscode
 launch.json
