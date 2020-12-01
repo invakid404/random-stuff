@@ -17,18 +17,15 @@ int main() {
 
     std::unordered_set<int> complements;
 
-    auto res = -1;
     for (auto& val : vec) {
         auto complement = 2020 - val;
         if (complements.find(complement) != complements.end()) {
-            res = val * complement;
+            std::cout << val * complement << ENDL;
             break;
         }
 
         complements.insert(val);
     }
-
-    std::cout << res << ENDL;
 
     return 0;
 }
