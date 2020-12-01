@@ -9,22 +9,17 @@ int main() {
 
     std::ifstream is("input.txt");
 
-    std::vector<int> vec;
-    int foo;
-    while (is >> foo) {
-        vec.emplace_back(foo);
-    }
-
     std::unordered_set<int> complements;
 
-    for (auto& val : vec) {
-        auto complement = 2020 - val;
+    int foo;
+    while (is >> foo) {
+        auto complement = 2020 - foo;
         if (complements.find(complement) != complements.end()) {
-            std::cout << val * complement << ENDL;
+            std::cout << foo * complement << ENDL;
             break;
         }
 
-        complements.insert(val);
+        complements.insert(foo);
     }
 
     return 0;
