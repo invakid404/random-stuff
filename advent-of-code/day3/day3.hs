@@ -1,4 +1,4 @@
-import Control.Monad
+import Control.Monad (liftM2)
 
 readLines :: FilePath -> IO [String]
 readLines = (lines `fmap`) . readFile
