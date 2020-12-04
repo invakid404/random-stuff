@@ -7,10 +7,6 @@ import Text.Read (readMaybe)
 
 type Passport = M.HashMap String String
 
-if' :: Bool -> a -> a -> a
-if' True x _ = x
-if' False _ y = y
-
 readLines :: FilePath -> IO [String]
 readLines = (lines `fmap`) . readFile
 
