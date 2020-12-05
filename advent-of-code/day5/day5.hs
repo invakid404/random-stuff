@@ -17,7 +17,7 @@ binaryGo (k : ks) leftKey rightKey leftVal rightVal
 mex :: (Eq t, Num t) => [t] -> t
 mex = subtract 1 . (mex' =<< head)
   where
-    mex' curr [] = curr
+    mex' curr [] = curr + 1
     mex' curr (l : ls)
       | l /= curr = l
       | otherwise = mex' (curr + 1) ls
