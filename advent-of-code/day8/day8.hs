@@ -1,7 +1,8 @@
 {-# LANGUAGE FlexibleContexts #-}
 
 import Control.Lens (Ixed (ix), over)
-import Control.Monad.Except (MonadError (throwError), when)
+import Control.Monad (liftM2, when)
+import Control.Monad.Except (MonadError (throwError))
 import Data.Attoparsec.Text.Lazy
   ( Parser,
     decimal,
@@ -63,8 +64,10 @@ partTwo console = head [n | i <- [0 .. V.length console - 1], Right n <- [run $ 
 
 main :: IO ()
 main =
-  print
-    . partTwo
+  liftM2
+    (>>)
+    (print . partOne)
+    (print . partTwo)
     . parseConsole
     . lines
     =<< readFile "input.txt"
