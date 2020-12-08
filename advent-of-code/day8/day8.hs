@@ -56,8 +56,7 @@ partOne = fromLeft 0 . run
 partTwo :: Console -> Int
 partTwo console =
   head
-    [ n
-    | i <- [0 .. V.length console - 1]
+    [ n | i <- [0 .. V.length console - 1]
     , Right n <- [run $ over (ix i) modify console]
     ]
 
