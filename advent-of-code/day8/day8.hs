@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-import Control.Lens
-import Control.Monad.Except
+import Control.Lens (Ixed (ix), over)
+import Control.Monad.Except (MonadError (throwError), when)
 import Data.Attoparsec.Text.Lazy
   ( Parser,
     decimal,
