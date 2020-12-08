@@ -36,6 +36,7 @@ instruction = do
 
 modify :: Instruction -> Instruction
 modify (Jmp n) = Nop n
+modify (Nop n) = Jmp n
 modify x       = x
 
 run :: Console -> Either Int Int
