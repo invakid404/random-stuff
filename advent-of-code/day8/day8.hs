@@ -40,15 +40,15 @@ modify x       = x
 
 run :: Console -> Either Int Int
 run = go S.empty 0 0
- where
-  go vis rip acc ops = do
-    when (S.member rip vis) $ throwError acc
-    let newVis = S.insert rip vis
-    case ops !? rip of
-      Just (Acc n) -> go newVis (rip + 1) (acc + n) ops
-      Just (Jmp n) -> go newVis (rip + n) acc ops
-      Just (Nop _) -> go newVis (rip + 1) acc ops
-      Nothing      -> pure acc
+  where
+    go vis rip acc ops = do
+      when (S.member rip vis) $ throwError acc
+      let newVis = S.insert rip vis
+      case ops !? rip of
+        Just (Acc n) -> go newVis (rip + 1) (acc + n) ops
+        Just (Jmp n) -> go newVis (rip + n) acc ops
+        Just (Nop _) -> go newVis (rip + 1) acc ops
+        Nothing      -> pure acc
 
 partOne :: Console -> Int
 partOne = fromLeft 0 . run
@@ -62,7 +62,8 @@ partTwo console =
 
 main :: IO ()
 main =
-  liftM2 (>>)
+  liftM2
+    (>>)
     (print . partOne)
     (print . partTwo)
     . parseConsole
