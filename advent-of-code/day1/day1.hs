@@ -1,4 +1,4 @@
-import Control.Monad (replicateM)
+import           Control.Monad (replicateM)
 
 readLines :: FilePath -> IO [String]
 readLines = (lines `fmap`) . readFile

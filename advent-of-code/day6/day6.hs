@@ -1,8 +1,8 @@
-import Control.Monad (liftM2)
-import Data.Bits (Bits (bit, popCount, (.&.), (.|.)))
-import Data.Char (ord)
-import Data.Foldable (Foldable (foldl'))
-import Data.List.Split (splitOn)
+import           Control.Monad   (liftM2)
+import           Data.Bits       (Bits (bit, popCount, (.&.), (.|.)))
+import           Data.Char       (ord)
+import           Data.Foldable   (Foldable (foldl'))
+import           Data.List.Split (splitOn)
 
 main :: IO ()
 main =

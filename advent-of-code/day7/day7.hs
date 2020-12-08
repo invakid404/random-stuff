@@ -1,31 +1,19 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-import Control.Monad (ap, liftM2)
-import Data.Attoparsec.Text.Lazy
-  ( Parser,
-    anyChar,
-    choice,
-    decimal,
-    inClass,
-    many',
-    manyTill,
-    parseOnly,
-    skipSpace,
-    string,
-    takeWhile1,
-  )
-import Data.Either (rights)
-import Data.Graph.Inductive.Graph
-  ( Graph (mkGraph),
-    LNode,
-    Node,
-    out,
-  )
-import Data.Graph.Inductive.PatriciaTree (Gr)
-import Data.Graph.Inductive.Query.DFS (rdfs)
-import qualified Data.HashMap.Lazy as M
-import Data.Maybe (catMaybes, fromJust)
-import qualified Data.Text as T
+import           Control.Monad                     (ap, liftM2)
+import           Data.Attoparsec.Text.Lazy         (Parser, anyChar, choice,
+                                                    decimal, inClass, many',
+                                                    manyTill, parseOnly,
+                                                    skipSpace, string,
+                                                    takeWhile1)
+import           Data.Either                       (rights)
+import           Data.Graph.Inductive.Graph        (Graph (mkGraph), LNode,
+                                                    Node, out)
+import           Data.Graph.Inductive.PatriciaTree (Gr)
+import           Data.Graph.Inductive.Query.DFS    (rdfs)
+import qualified Data.HashMap.Lazy                 as M
+import           Data.Maybe                        (catMaybes, fromJust)
+import qualified Data.Text                         as T
 
 data Bags = Bags {gr :: Gr String Int, target :: Node}
 
