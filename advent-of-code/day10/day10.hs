@@ -1,7 +1,7 @@
-import           Control.Monad         (ap, liftM2)
-import           Data.Function.Memoize (Memoizable (memoize))
-import           Data.List             (foldl', sort)
-import qualified Data.MultiSet         as MS
+import Control.Monad (ap, liftM2)
+import Data.Function.Memoize (Memoizable (memoize))
+import Data.List (foldl', sort)
+import qualified Data.MultiSet as MS
 
 partOne :: [Integer] -> MS.Occur
 partOne = foldl' ((. snd) . (*)) 1 . MS.toOccurList . MS.fromList . (zipWith (-) =<< tail)

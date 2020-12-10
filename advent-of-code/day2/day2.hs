@@ -1,9 +1,16 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-import           Data.Attoparsec.Text (Parser, char, decimal, letter, parseOnly,
-                                       space, takeText)
-import           Data.Either          (rights)
-import qualified Data.Text            as T
+import Data.Attoparsec.Text
+  ( Parser,
+    char,
+    decimal,
+    letter,
+    parseOnly,
+    space,
+    takeText,
+  )
+import Data.Either (rights)
+import qualified Data.Text as T
 
 data Password = Password {min :: Int, max :: Int, key :: Char, pass :: T.Text}
 

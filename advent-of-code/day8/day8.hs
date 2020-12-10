@@ -1,15 +1,22 @@
 {-# LANGUAGE FlexibleContexts #-}
 
-import           Control.Lens              (Ixed (ix), over)
-import           Control.Monad             (liftM2, when)
-import           Control.Monad.Except      (MonadError (throwError))
-import           Data.Attoparsec.Text.Lazy (Parser, decimal, letter, many',
-                                            parseOnly, signed, skipSpace)
-import           Data.Either               (fromLeft, rights)
-import qualified Data.HashSet              as S
-import qualified Data.Text                 as T
-import           Data.Vector               ((!?))
-import qualified Data.Vector               as V
+import Control.Lens (Ixed (ix), over)
+import Control.Monad (liftM2, when)
+import Control.Monad.Except (MonadError (throwError))
+import Data.Attoparsec.Text.Lazy
+  ( Parser,
+    decimal,
+    letter,
+    many',
+    parseOnly,
+    signed,
+    skipSpace,
+  )
+import Data.Either (fromLeft, rights)
+import qualified Data.HashSet as S
+import qualified Data.Text as T
+import Data.Vector ((!?))
+import qualified Data.Vector as V
 
 type Console = V.Vector Instruction
 
@@ -32,12 +39,12 @@ instruction = do
       "acc" -> Acc opArg
       "jmp" -> Jmp opArg
       "nop" -> Nop opArg
-      _     -> error $ "Unknown opname: " ++ opName
+      _ -> error $ "Unknown opname: " ++ opName
 
 modify :: Instruction -> Instruction
 modify (Jmp n) = Nop n
 modify (Nop n) = Jmp n
-modify x       = x
+modify x = x
 
 run :: Console -> Either Int Int
 run = go S.empty 0 0
@@ -49,7 +56,7 @@ run = go S.empty 0 0
         Just (Acc n) -> go newVis (rip + 1) (acc + n) ops
         Just (Jmp n) -> go newVis (rip + n) acc ops
         Just (Nop _) -> go newVis (rip + 1) acc ops
-        Nothing      -> pure acc
+        Nothing -> pure acc
 
 partOne :: Console -> Int
 partOne = fromLeft 0 . run
@@ -57,8 +64,7 @@ partOne = fromLeft 0 . run
 partTwo :: Console -> Int
 partTwo console =
   head
-    [ n | i <- [0 .. V.length console - 1]
-    , Right n <- [run $ over (ix i) modify console]
+    [ n | i <- [0 .. V.length console - 1], Right n <- [run $ over (ix i) modify console]
     ]
 
 main :: IO ()

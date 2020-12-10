@@ -1,6 +1,6 @@
-import           Control.Monad (liftM2, replicateM)
-import           Data.Vector   (Vector, (!))
-import qualified Data.Vector   as V
+import Control.Monad (liftM2, replicateM)
+import Data.Vector (Vector, (!))
+import qualified Data.Vector as V
 
 partOne :: Vector Integer -> Integer
 partOne xs

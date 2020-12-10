@@ -1,7 +1,7 @@
-import           Control.Monad     (liftM2)
-import           Data.Char         (digitToInt)
-import           Data.Foldable     (foldl')
-import           Data.List.Ordered (minus, sort)
+import Control.Monad (liftM2)
+import Data.Char (digitToInt)
+import Data.Foldable (foldl')
+import Data.List.Ordered (minus, sort)
 
 main :: IO ()
 main =

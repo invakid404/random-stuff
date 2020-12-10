@@ -1,9 +1,9 @@
-import           Control.Monad       (liftM2)
-import           Data.Char           (isDigit, isHexDigit)
+import Control.Monad (liftM2)
+import Data.Char (isDigit, isHexDigit)
 import qualified Data.HashMap.Strict as M
-import           Data.List.Split     (chunksOf, splitOn)
-import           Data.Maybe          (isJust)
-import           Text.Read           (readMaybe)
+import Data.List.Split (chunksOf, splitOn)
+import Data.Maybe (isJust)
+import Text.Read (readMaybe)
 
 type Passport = M.HashMap String String
 
