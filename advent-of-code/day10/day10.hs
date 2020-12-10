@@ -1,5 +1,5 @@
 import Control.Monad (ap, liftM2)
-import Data.Function.Memoize (Memoizable (memoize))
+import Data.Function.Memoize (memoFix)
 import Data.List (foldl', sort)
 import qualified Data.MultiSet as MS
 
@@ -9,10 +9,13 @@ partOne = foldl' ((. snd) . (*)) 1 . MS.toOccurList . MS.fromList . (zipWith (-)
 partTwo :: [Integer] -> Integer
 partTwo list = partTwo' 0
   where
-    partTwo' = memoize go
-    go num
-      | num == last list = 1
-      | otherwise = sum (map partTwo' (filter (`elem` list) [num + 1 .. num + 3]))
+    partTwo' =
+      memoFix
+        ( \f num ->
+            if num == last list
+              then 1
+              else sum (map f (filter (`elem` list) [num + 1 .. num + 3]))
+        )
 
 main :: IO ()
 main =
