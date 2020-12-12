@@ -1,4 +1,4 @@
-import Control.Monad
+import Control.Monad (liftM2)
 
 data Move
   = N Int
