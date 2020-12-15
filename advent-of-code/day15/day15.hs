@@ -12,8 +12,8 @@ if' :: Bool -> p -> p -> p
 if' True x _ = x
 if' False _ y = y
 
-run :: Int -> [Int] -> Int
-run n inp = runST $ do
+solve :: Int -> [Int] -> Int
+solve n inp = runST $ do
   arr <- newArray (0, n) (-1) :: ST s (STUArray s Int Int)
   forM_ (zip inp [1 ..]) $ uncurry (writeArray arr)
 
@@ -27,8 +27,8 @@ main :: IO ()
 main =
   liftM2
     (>>)
-    (print . run 2020)
-    (print . run 30000000)
+    (print . solve 2020)
+    (print . solve 30000000)
     . map read
     . splitOn ","
     =<< readFile "input.txt"
