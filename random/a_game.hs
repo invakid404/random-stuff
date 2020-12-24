@@ -9,13 +9,14 @@ solve l = solve' 0 (n - 1)
     n = V.length bottles
     solve' =
       memoFix2
-        ( \f left right -> let year = left + n - right in
-            if left > right
-              then 0
-              else
-                max
-                  (f (left + 1) right + year * bottles ! left)
-                  (f left (right - 1) + year * bottles ! right)
+        ( \f left right ->
+            let year = left + n - right
+             in if left > right
+                  then 0
+                  else
+                    max
+                      (f (left + 1) right + year * bottles ! left)
+                      (f left (right - 1) + year * bottles ! right)
         )
 
 main :: IO ()
