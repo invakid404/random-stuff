@@ -1,20 +1,21 @@
-import Data.Function.Memoize (memoFix3)
-import Data.Vector ((!))
-import qualified Data.Vector as V
+import Data.Function.Memoize (memoFix2)
+import Data.Vector.Unboxed ((!))
+import qualified Data.Vector.Unboxed as V
 
-solve :: [Integer] -> Integer
-solve l = solve' 1 0 (length l - 1)
+solve :: [Int] -> Int
+solve l = solve' 0 (n - 1)
   where
     bottles = V.fromList l
+    n = V.length bottles
     solve' =
-      memoFix3
-        ( \f year left right ->
+      memoFix2
+        ( \f left right -> let year = left + n - right in
             if left > right
               then 0
               else
                 max
-                  (f (year + 1) (left + 1) right + year * bottles ! left)
-                  (f (year + 1) left (right - 1) + year * bottles ! right)
+                  (f (left + 1) right + year * bottles ! left)
+                  (f left (right - 1) + year * bottles ! right)
         )
 
 main :: IO ()
