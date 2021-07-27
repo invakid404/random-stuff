@@ -1,3 +1,4 @@
+// https://codeforces.com/gym/102644/problem/A
 #include <bits/stdc++.h>
 
 #define ENDL '\n'
