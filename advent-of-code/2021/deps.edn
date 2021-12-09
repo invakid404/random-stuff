@@ -1,1 +1,6 @@
-{:deps {org.clojure/math.combinatorics {:mvn/version "0.1.6"}}}
+{
+ :deps {
+  org.clojure/math.combinatorics {:mvn/version "0.1.6"}
+  aysylu/loom {:mvn/version "1.0.2"}
+ }
+}
