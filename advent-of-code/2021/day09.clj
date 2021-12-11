@@ -3,6 +3,8 @@
          '[loom.attr :refer (add-attr attr)]
          '[loom.alg :refer (connected-components)])
 
+(load-file "./matrix-utils.clj")
+
 (defn part1 [graph]
   (->> (nodes graph)
        (filter #(= (out-degree graph %) 0))
@@ -18,30 +20,8 @@
        (take 3)
        (reduce *)))
 
-(def deltas [[-1, 0] [1, 0] [0, -1] [0, 1]])
-
-(defn index-1d [{:keys [cols]} [x, y]]
-  (+ (* x cols) y))
-
-(defn index-2d [{:keys [cols]} idx]
-  (vector (quot idx cols) (rem idx cols)))
-
-(defn neighbors [{:keys [rows cols] :as input} idx]
-  (let [curr-index (index-2d input idx)]
-    (->> deltas
-         (map #(map + curr-index %))
-         (filter
-          (fn [[x, y]]
-            (and
-             (< -1 x rows)
-             (< -1 y cols))))
-         (map (partial index-1d input)))))
-
-(defn matrix [m]
-  {:values (flatten m) :rows (count m) :cols (count (first m))})
-
 (defn edges-for [{:keys [values rows cols] :as input} [idx, value]]
-  (->> (neighbors input idx)
+  (->> (neighbors deltas-no-diagonals input idx)
        (filter #(< (nth values %) value))
        (map #(vector idx %))))
 
