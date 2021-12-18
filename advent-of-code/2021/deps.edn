@@ -3,5 +3,7 @@
   org.clojure/math.combinatorics {:mvn/version "0.1.6"}
   aysylu/loom {:mvn/version "1.0.2"}
   kixi/stats {:mvn/version "0.5.4"}
+  commons-codec/commons-codec {:mvn/version "1.15"}
+  org.blancas/kern {:mvn/version "1.1.0"}
  }
 }
