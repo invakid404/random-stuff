@@ -11,5 +11,8 @@
 *.o
 *.hi
 
+# Ignore cmake build dir
+build
+
 /.vscode
 launch.json
