@@ -9,6 +9,7 @@ find_package(absl REQUIRED)
 
 add_executable(day19 day19.cpp)
 add_executable(day22 day22.cpp)
+add_executable(day25 day25.cpp)
 
 target_link_libraries(day19 absl::flat_hash_set absl::strings)
 target_link_libraries(day22 absl::flat_hash_map)
