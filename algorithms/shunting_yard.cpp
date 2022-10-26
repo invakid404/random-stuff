@@ -189,8 +189,9 @@ auto shunting_yard(Lexer& lexer) {
                     operators.find(other_operator.value())->second;
                 auto other_precedence = other_operator_data.precedence;
 
-                if (other_precedence < precedence ||
-                    associativity != Operator::Associativity::LeftToRight) {
+                if (other_precedence <= precedence &&
+                    (other_precedence != precedence ||
+                     associativity != Operator::Associativity::LeftToRight)) {
                     break;
                 }
 
