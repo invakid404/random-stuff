@@ -17,12 +17,10 @@
     "noImplicitReturns": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "noUncheckedIndexedAccess": true,
     "moduleResolution": "node",
     "outDir": "lib/"
   },
   "include": ["./**/*.ts"],
-  "exclude": [
-    "node_modules/**/*",
-    "lib/**/*"
-  ]
+  "exclude": ["node_modules/**/*", "lib/**/*"]
 }
