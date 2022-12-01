@@ -31,6 +31,10 @@ class MinHeap {
         return value
     }
 
+    public function ensure_capacity(mut this, anon capacity: usize) throws -> void {
+        this.data.ensure_capacity(capacity)
+    }
+
     function sift_down(mut this) throws -> void {
         mut idx: usize = 0
         while MinHeap::left(idx) < this.data.size() {

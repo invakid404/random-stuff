@@ -3,6 +3,8 @@ import heap { MinHeap }
 
 function solve(data: [String], top: usize) throws -> u64 {
     mut max_values: MinHeap = MinHeap::construct()
+    max_values.ensure_capacity(top)
+
     mut current: u64 = 0
 
     for line in data {
