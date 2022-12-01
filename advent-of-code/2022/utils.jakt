@@ -30,8 +30,10 @@ function max<T>(anon a: T, anon b: T) -> T {
     return b
 }
 
-function swap(anon a: &mut u64, anon b: &mut u64) -> void {
-    let tmp = *a
-    a = *b
-    b = tmp
+function swap<T>(anon a: T, anon b: T) -> void {
+    unsafe {
+        cpp {
+            "Jakt::swap(a, b);"
+        }
+    }
 }
