@@ -18,6 +18,10 @@ class MinHeap {
         }
     }
 
+    public function top(this) -> u64 {
+        return this.data[0]
+    }
+
     public function extract(mut this) throws -> u64 {
         swap(&mut this.data[0], &mut this.data[this.data.size() - 1])
         let value = this.data.pop()!

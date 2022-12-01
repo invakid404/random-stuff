@@ -7,19 +7,33 @@ function solve(data: [String], top: usize) throws -> u64 {
 
     for line in data {
         if line == "" {
-            max_values.insert(value: current)
-            if max_values.size() > top {
+            defer {
+                current = 0
+            }
+
+            if max_values.size() == top {
+                // NOTE: If `current` is <= `max_values.top()`, inserting it
+                //       would result in it being sifted up to the top. 
+                // 
+                //       Since we're in the case where an insertion would
+                //       make the size of the heap bigger than `top`, we'd
+                //       need to extract the top element right after that,
+                //       which would be `current`, effectively undoing the
+                //       insertion. It's equivalent to do nothing.
+                if current <= max_values.top() {
+                    continue
+                }
+
                 max_values.extract()
             }
 
-            current = 0
+            max_values.insert(value: current)
 
             continue
         }
 
         current += line.to_uint()! as! u64
     }
-
     mut result: u64 = 0
     while max_values.size() > 0 {
         result += max_values.extract()
