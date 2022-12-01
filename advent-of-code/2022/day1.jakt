@@ -1,0 +1,36 @@
+import utils { max, read_lines, swap }
+import heap { MinHeap }
+
+function solve(data: [String], top: usize) throws -> u64 {
+    mut max_values: MinHeap = MinHeap::construct()
+    mut current: u64 = 0
+
+    for line in data {
+        if line == "" {
+            max_values.insert(value: current)
+            if max_values.size() > top {
+                max_values.extract()
+            }
+
+            current = 0
+
+            continue
+        }
+
+        current += line.to_uint()! as! u64
+    }
+
+    mut result: u64 = 0
+    while max_values.size() > 0 {
+        result += max_values.extract()
+    }
+
+    return result
+}
+
+function main() {
+    mut lines = read_lines("day1.txt")
+    lines.push("")
+
+    println("{}, {}", solve(data: lines, top: 1), solve(data: lines, top: 3))
+}

@@ -1,0 +1,37 @@
+function read_lines(anon path: String) throws -> [String] {
+    // NOTE: Jakt's String::split() doesn't preserve empty strings, and those
+    //       are pretty important for AoC challenges, so we implement the
+    //       splitting ourselves instead.
+
+    mut parts: [String] = []
+
+    mut file = File::open_for_reading(path)
+    mut builder = StringBuilder::create()
+
+    for b in file.read_all() {
+        if b == b'\n' {
+            parts.push(builder.to_string())
+            builder.clear()
+
+            continue
+        }
+
+        builder.append(b)
+    }
+
+    return parts
+}
+
+function max<T>(anon a: T, anon b: T) -> T {
+    if a > b {
+        return a
+    }
+
+    return b
+}
+
+function swap(anon a: &mut u64, anon b: &mut u64) -> void {
+    let tmp = *a
+    a = *b
+    b = tmp
+}
