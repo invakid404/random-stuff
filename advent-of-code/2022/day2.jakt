@@ -1,0 +1,51 @@
+import utils { read_lines }
+
+function solve(anon rounds: [(u8, u8)], anon score_fn: function(x: u8, y: u8) -> u64) throws -> u64 {
+    mut total: u64 = 0
+    for round in rounds {
+        let x = round.0 - b'A'
+        let y = round.1 - b'X'
+
+        total += score_fn(x, y)
+    }
+
+    return total
+}
+
+function main() {
+    let points: [u8] = [3, 6, 0] // [draw, win, lose]
+
+    let lines = read_lines("day2.txt")
+
+    mut rounds: [(u8, u8)] = []
+    rounds.ensure_capacity(lines.size())
+
+    for line in lines {
+        let parts = line.split(' ')
+        if parts.size() != 2 {
+            throw Error::from_errno(0)
+        }
+
+        rounds.push((parts[0].byte_at(0), parts[1].byte_at(0)))
+    }
+
+    let part1 = solve(rounds, function[&points](x: u8, y: u8) -> u64 {
+        let score = y + points[(3 + y - x) % 3] + 1
+
+        return score as! u64
+    })
+
+    let part2 = solve(rounds, function[&points](x: u8, y: u8) -> u64 {
+        let delta = y as! i8 - 1
+
+        let outcome = ((3 + delta) % 3) as! u8
+
+        let me = ((3 + delta + x as! i8) % 3) as! u8
+
+        let score = me + points[outcome] + 1
+
+        return score as! u64
+    })
+
+    println("{}, {}", part1, part2)
+}
