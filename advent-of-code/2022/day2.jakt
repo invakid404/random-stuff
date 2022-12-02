@@ -36,11 +36,9 @@ function main() {
     })
 
     let part2 = solve(rounds, function[&points](x: u8, y: u8) -> u64 {
-        let delta = y as! i8 - 1
+        let outcome = (2 + y) % 3
 
-        let outcome = ((3 + delta) % 3) as! u8
-
-        let me = ((3 + delta + x as! i8) % 3) as! u8
+        let me = (3 + outcome + x) % 3
 
         let score = me + points[outcome] + 1
 
