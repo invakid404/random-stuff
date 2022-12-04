@@ -1,0 +1,109 @@
+import utils { read_lines }
+
+function parse_compartment(anon compartment: String) throws -> {u8} {
+    mut result: {u8} = {}
+    result.ensure_capacity(compartment.length())
+
+    for idx in 0..compartment.length() {
+        let c = compartment.byte_at(idx)
+        if c >= b'a' {
+            result.add(c - b'a' + 1)
+
+            continue
+        }
+
+        result.add(c - b'A' + 27)
+    }
+
+    return result
+}
+
+function intersect<T>(anon x: {T}, anon y: {T}) throws -> {T} {
+    mut result: {T} = {}
+    for value in x {
+        if y.contains(value) {
+            result.add(value)
+        }
+    }
+
+    return result
+}
+
+function part1(backpacks: [({u8}, {u8})]) throws -> u64 {
+    mut result: u64 = 0
+    for backpack in backpacks {
+        let current = intersect(backpack.0, backpack.1)
+        if current.size() > 1 {
+            throw Error::from_errno(0)
+        }
+
+        for value in current {
+            result += value as! u64
+        }
+    }
+
+    return result
+}
+
+function part2(backpacks: [({u8}, {u8})]) throws -> u64 {
+    if backpacks.size() % 3 != 0 {
+        throw Error::from_errno(1)
+    }
+
+    mut result: u64 = 0
+    mut i: i64 = 0
+
+    while (i as! usize) < backpacks.size() {
+        mut current: Optional<{u8}> = None
+
+        for backpack in backpacks[i..(i + 3)] {
+            mut merged: {u8} = {}
+
+            for item in backpack.0 {
+                merged.add(item)
+            }
+
+            for item in backpack.1 {
+                merged.add(item)
+            }
+
+            if not current.has_value() {
+                current = merged
+
+                continue
+            }
+
+            current = intersect(current.value(), merged)
+        }
+
+        if current.value().size() > 1 {
+            throw Error::from_errno(2)
+        }
+
+        for value in current.value() {
+            result += value as! u64
+        }
+
+        i += 3
+    }
+
+    return result
+}
+
+function main() {
+    let lines = read_lines("day3.txt")
+
+    mut backpacks: [({u8}, {u8})] = []
+    backpacks.ensure_capacity(lines.size())
+
+    for line in lines {
+        let compartment_length = line.length() / 2
+
+        let first_compartment = line.substring(start: 0, length: compartment_length)
+        let second_compartment = line.substring(start: compartment_length, length: compartment_length)
+
+        backpacks.push((parse_compartment(first_compartment), parse_compartment(second_compartment)))
+    }
+
+    println("{}, {}", part1(backpacks), part2(backpacks))
+}
