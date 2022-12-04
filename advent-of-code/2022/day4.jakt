@@ -1,0 +1,65 @@
+import utils { read_lines }
+
+class NumericRange {
+    public start: u64
+    public end: u64
+
+    public function contains(this, anon other: NumericRange) -> bool {
+        return other.start >= this.start and other.end <= this.end
+    }
+
+    public function overlaps_with(this, anon other: NumericRange) -> bool {
+        return this.start <= other.end and other.start <= this.end
+    }
+}
+
+function parse_range(anon range: String) throws -> NumericRange {
+    let parts = range.split('-')
+
+    let start = parts[0].to_uint()!
+    let end = parts[1].to_uint()!
+
+    return NumericRange(start: start as! u64, end: end as! u64)
+}
+
+function part1(range_pairs: [(NumericRange, NumericRange)]) -> u64 {
+    mut count: u64 = 0
+
+    for ranges in range_pairs {
+        if ranges.0.contains(ranges.1) or ranges.1.contains(ranges.0) {
+            ++count
+        }
+    }
+
+    return count
+}
+
+function part2(range_pairs: [(NumericRange, NumericRange)]) -> u64 {
+    mut count: u64 = 0
+
+    for ranges in range_pairs {
+        if ranges.0.overlaps_with(ranges.1) {
+            ++count
+        }
+    }
+
+    return count
+}
+
+function main() {
+    let lines = read_lines("day4.txt")
+
+    mut range_pairs: [(NumericRange, NumericRange)] = []
+    range_pairs.ensure_capacity(lines.size())
+
+    for line in lines {
+        let range_parts = line.split(',')
+
+        let range_a = parse_range(range_parts[0])
+        let range_b = parse_range(range_parts[1])
+
+        range_pairs.push((range_a, range_b))
+    }
+
+    println("{}, {}", part1(range_pairs), part2(range_pairs))
+}
