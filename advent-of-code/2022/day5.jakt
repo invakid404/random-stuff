@@ -1,0 +1,163 @@
+import utils { read_lines }
+
+class OperationParser {
+    public line: String
+    idx: usize
+
+    public function create(line: String) throws -> OperationParser {
+        return OperationParser(line: line, idx: 0)
+    }
+
+    public function parse(mut this) -> (usize, usize, usize) {
+        this.idx = "move ".length()
+        let amount = this.parse_int()
+
+        this.idx += " from ".length()
+        let from = this.parse_int()
+
+        this.idx += " to ".length()
+        let to = this.parse_int()
+
+        return (amount, from - 1, to - 1)
+    }
+
+    function parse_int(mut this) -> usize {
+        mut result: usize = 0
+        while this.idx < this.line.length() {
+            let b = this.line.byte_at(this.idx)
+            if b < b'0' or b > b'9' {
+                break
+            }
+
+            result *= 10
+            result += (b - b'0') as! usize
+
+            ++this.idx
+        }
+
+        return result
+    }
+}
+
+function parse_stacks(anon stack_lines: ArraySlice<String>) throws -> [[u8]] {
+    mut stacks: [[u8]] = []
+
+    let item_indices_line = stack_lines.last()!
+    mut item_indices: [usize] = []
+
+    for idx in 0..item_indices_line.length() {
+        let b = item_indices_line.byte_at(idx)
+        if b >= b'0' and b <= b'9' {
+            item_indices.push(idx)
+        }
+
+        ++idx
+    }
+
+    stacks.ensure_capacity(item_indices.size())
+    for i in 0..item_indices.size() {
+        let arr: [u8] = []
+
+        stacks.push(arr)
+    }
+
+    for line_idx in 0..(stack_lines.size() - 1) {
+        let line = stack_lines[stack_lines.size() - line_idx - 2]
+
+        for stack_idx in 0..item_indices.size() {
+            let b = line.byte_at(item_indices[stack_idx])
+            if b == b' ' {
+                continue
+            }
+
+            stacks[stack_idx].push(b)
+        }
+    }
+
+    return stacks
+}
+
+function parse_operations(anon operation_lines: ArraySlice<String>) throws -> [(usize, usize, usize)] {
+    mut operations: [(usize, usize, usize)] = []
+
+    operations.ensure_capacity(operation_lines.size())
+    for line in operation_lines {
+        mut parser = OperationParser::create(line)
+
+        operations.push(parser.parse())
+    }
+
+    return operations
+}
+
+function parse_input(anon lines: [String]) throws -> ([[u8]], [(usize, usize, usize)]) {
+    mut stacks_end: usize = 0
+    while stacks_end < lines.size() {
+        if lines[stacks_end] == "" {
+            break
+        }
+
+        ++stacks_end
+    }
+
+    let stack_lines = lines[0..stacks_end]
+    let operation_lines = lines[(stacks_end + 1)..]
+
+    let stacks = parse_stacks(stack_lines)
+    let operations = parse_operations(operation_lines)
+
+    return (stacks, operations)
+}
+
+function clone_stacks(stacks: [[u8]]) throws -> [[u8]] {
+    mut new_stacks: [[u8]] = []
+    new_stacks.ensure_capacity(stacks.size())
+
+    for stack in stacks {
+        new_stacks.push(stack[..].to_array())
+    }
+
+    return new_stacks
+}
+
+function solve(
+    anon stacks: [[u8]]
+    anon operations: [(usize, usize, usize)]
+    anon mover: function(amount: usize, mut from: [u8], mut to: [u8]) throws -> void
+) throws -> String {
+    mut new_stacks = clone_stacks(stacks)
+
+    for (amount, from, to) in operations {
+        mover(amount: amount, from: new_stacks[from], to: new_stacks[to])
+    }
+
+    mut result = StringBuilder::create()
+    for stack in new_stacks {
+        result.append(stack.last()!)
+    }
+
+    return result.to_string()
+}
+
+function main() {
+    let lines = read_lines("day5.txt")
+    let (stacks, operations) = parse_input(lines)
+
+    let part1 = solve(stacks, operations, function[](amount: usize, mut from: [u8], mut to: [u8]) throws -> void {
+        for i in 0..amount {
+            let item = from.pop()!
+            to.push(item)
+        }
+
+        return
+    })
+
+    let part2 = solve(stacks, operations, mover: function[](amount: usize, mut from: [u8], mut to: [u8]) throws {
+        to.push_values(from[(from.size() - amount)..].to_array())
+        from.shrink(from.size() - amount)
+
+        return
+    })
+
+    println("{}, {}", part1, part2)
+}
