@@ -1,0 +1,33 @@
+import utils { read_lines }
+
+function solve(anon datastream: String, anon amount: usize) throws -> i64 {
+    mut occurrences: [usize] = [0; 26]
+
+    mut left: usize = 0
+    mut unique_chars: usize = 0
+
+    for right in 0..datastream.length() {
+        if occurrences[datastream.byte_at(right) - b'a']++ == 0 {
+            ++unique_chars
+        }
+
+        if right - left + 1 >= amount {
+            if unique_chars >= amount {
+                return right + 1
+            }
+
+            if --occurrences[datastream.byte_at(left++) - b'a'] == 0 {
+                --unique_chars
+            }
+        }
+    }
+
+    throw Error::from_errno(0)
+}
+
+function main() {
+    let lines = read_lines("day6.txt")
+    let datastream = lines[0]
+
+    println("{}, {}", solve(datastream, 4), solve(datastream, 14))
+}
