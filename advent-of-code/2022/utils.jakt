@@ -19,6 +19,10 @@ function read_lines(anon path: String) throws -> [String] {
         builder.append(b)
     }
 
+    if not builder.is_empty() {
+        parts.push(builder.to_string())
+    }
+
     return parts
 }
 
