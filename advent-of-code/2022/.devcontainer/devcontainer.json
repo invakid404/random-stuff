@@ -1,0 +1,42 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ruby
+{
+  "name": "Ruby",
+  "image": "mcr.microsoft.com/devcontainers/ruby:3-bullseye",
+  "features": {
+    "ghcr.io/devcontainers/features/ruby:1": {}
+  },
+  "extensions": [
+    "rebornix.Ruby",
+    "kaiwood.endwise",
+    "misogi.ruby-rubocop",
+    "groksrc.ruby",
+    "hoovercj.ruby-linter",
+    "miguel-savignano.ruby-symbols",
+    "wingrunr21.vscode-ruby"
+  ],
+  "settings": {
+    "[ruby]": {
+      "editor.insertSpaces": true,
+      "editor.tabSize": 2
+    },
+    "ruby.rubocop.executePath": "/usr/local/rvm/gems/default/bin/",
+    "ruby.rubocop.onSave": true
+  },
+  "postCreateCommand": "gem install rubocop"
+
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  // "features": {},
+
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // "forwardPorts": [],
+
+  // Use 'postCreateCommand' to run commands after the container is created.
+  // "postCreateCommand": "ruby --version",
+
+  // Configure tool-specific properties.
+  // "customizations": {},
+
+  // Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+  // "remoteUser": "root"
+}
