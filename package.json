@@ -5,6 +5,7 @@
   "repository": "git@github.com:invakid404/random-stuff.git",
   "author": "invakid404 <invakid404@riseup.net>",
   "license": "MIT",
+  "type": "module",
   "devDependencies": {
     "@types/jest": "^29.2.4",
     "@types/node": "^18.11.12",
