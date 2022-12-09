@@ -6,6 +6,9 @@
   "author": "invakid404 <invakid404@riseup.net>",
   "license": "MIT",
   "type": "module",
+  "scripts": {
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
   "devDependencies": {
     "@types/jest": "^29.2.4",
     "@types/node": "^18.11.12",
