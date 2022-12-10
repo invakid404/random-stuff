@@ -140,7 +140,7 @@ function solve(
 }
 
 function main() {
-    let lines = read_lines("day5.txt")
+    let lines = read_lines("day05.txt")
     let (stacks, operations) = parse_input(lines)
 
     let part1 = solve(stacks, operations, function[](amount: usize, mut from: [u8], mut to: [u8]) throws -> void {

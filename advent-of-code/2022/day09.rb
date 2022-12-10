@@ -4,7 +4,7 @@ require 'set'
 
 @deltas = { 'L' => [-1, 0], 'R' => [1, 0], 'U' => [0, 1], 'D' => [0, -1] }
 
-@operations = File.foreach('day9.txt').map(&:split)
+@operations = File.foreach('day09.txt').map(&:split)
 
 def solve(length)
   chain = Array.new(length) { [0, 0] }

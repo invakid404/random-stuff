@@ -26,7 +26,7 @@ function solve(anon datastream: String, anon amount: usize) throws -> i64 {
 }
 
 function main() {
-    let lines = read_lines("day6.txt")
+    let lines = read_lines("day06.txt")
     let datastream = lines[0]
 
     println("{}, {}", solve(datastream, 4), solve(datastream, 14))

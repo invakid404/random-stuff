@@ -91,7 +91,7 @@ function part2(backpacks: [({u8}, {u8})]) throws -> u64 {
 }
 
 function main() {
-    let lines = read_lines("day3.txt")
+    let lines = read_lines("day03.txt")
 
     mut backpacks: [({u8}, {u8})] = []
     backpacks.ensure_capacity(lines.size())

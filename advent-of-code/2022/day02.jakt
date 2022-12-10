@@ -15,7 +15,7 @@ function solve(anon rounds: [(u8, u8)], anon score_fn: function(x: u8, y: u8) ->
 function main() {
     let points: [u8] = [3, 6, 0] // [draw, win, lose]
 
-    let lines = read_lines("day2.txt")
+    let lines = read_lines("day02.txt")
 
     mut rounds: [(u8, u8)] = []
     rounds.ensure_capacity(lines.size())

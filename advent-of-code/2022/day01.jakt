@@ -45,7 +45,7 @@ function solve(data: [String], top: usize) throws -> u64 {
 }
 
 function main() {
-    mut lines = read_lines("day1.txt")
+    mut lines = read_lines("day01.txt")
     lines.push("")
 
     println("{}, {}", solve(data: lines, top: 1), solve(data: lines, top: 3))

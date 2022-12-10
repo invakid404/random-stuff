@@ -47,7 +47,7 @@ function part2(range_pairs: [(NumericRange, NumericRange)]) -> u64 {
 }
 
 function main() {
-    let lines = read_lines("day4.txt")
+    let lines = read_lines("day04.txt")
 
     mut range_pairs: [(NumericRange, NumericRange)] = []
     range_pairs.ensure_capacity(lines.size())

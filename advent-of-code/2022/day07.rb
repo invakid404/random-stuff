@@ -2,7 +2,7 @@
 
 folder_sizes = Hash.new(0)
 
-File.foreach('day7.txt').map(&:split).each_with_object([]) do |line, stack|
+File.foreach('day07.txt').map(&:split).each_with_object([]) do |line, stack|
   case line
   in ['$', 'cd', '..']
     stack.pop

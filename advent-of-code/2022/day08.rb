@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-@grid = File.foreach('day8.txt').map { |line| line.strip.chars.map(&:to_i) }
+@grid = File.foreach('day08.txt').map { |line| line.strip.chars.map(&:to_i) }
 @rows = @grid.length
 @cols = @grid[0].length
 
