@@ -12,6 +12,7 @@
 
 /* _____________ Your Code Here _____________ */
 
+/* Pre-TypeScript 4.8 solution:
 type MultiplyBy10<Array extends readonly any[]> = [
   ...Array,
   ...Array,
@@ -47,6 +48,11 @@ type ToNumber<
   ? Accumulator['length']
   : S extends `${infer Head extends Digit}${infer Rest}`
   ? ToNumber<Rest, [...MultiplyBy10<Accumulator>, ...DigitToArray[Head]]>
+  : never;
+*/
+
+type ToNumber<S extends string> = S extends `${infer Value extends number}`
+  ? Value
   : never;
 
 /* _____________ Test Cases _____________ */
