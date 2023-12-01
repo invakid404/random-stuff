@@ -1,0 +1,26 @@
+{
+  "name": "advent-of-code-2023",
+  "version": "0.1.0",
+  "esy": {
+    "build": "dune build -p #{self.name}",
+    "buildDev": "dune build --promote-install-files --root . --only-package #{self.name}",
+    "buildEnv": { "ODOC_SYNTAX": "re" }
+  },
+  "scripts": {
+    "format": "esy dune build @fmt --auto-promote",
+    "doc": "esy dune build @doc"
+  },
+  "dependencies": {
+    "@opam/dune": "*",
+    "@opam/js_of_ocaml": "5.4.0",
+    "@opam/js_of_ocaml-ppx": "5.4.0",
+    "@opam/reason": "*",
+    "ocaml": "4.14.x"
+  },
+  "devDependencies": {
+    "@opam/ocaml-lsp-server": "*",
+    "@opam/merlin": "*",
+    "@opam/odoc": "*",
+    "@opam/ocamlformat": "*"
+  }
+}

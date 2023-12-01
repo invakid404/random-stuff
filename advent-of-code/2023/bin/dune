@@ -1,0 +1,5 @@
+(executable
+ (name day01)
+ (public_name day01)
+ (libraries lib str)
+ (modes native))
