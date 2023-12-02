@@ -27,3 +27,19 @@ let join = (char, list) => {
 
 let (^$) = (s, c) => s ++ String.make(1, c);
 let ($^) = (c, s) => String.make(1, c) ++ s;
+
+module S = {
+  let for_each = (f, seq) => {
+    let _ =
+      Seq.for_all(
+        value => {
+          f(value);
+
+          true;
+        },
+        seq,
+      );
+
+    ();
+  };
+};
