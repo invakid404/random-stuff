@@ -1,5 +1,7 @@
 export type Id<T> = { [Key in keyof T]: T[Key] };
 
+export type Not<T extends boolean> = T extends true ? false : true;
+
 export type Split<T extends string, D extends string> = SplitHelper<T, D>;
 
 type SplitHelper<
@@ -13,6 +15,54 @@ type SplitHelper<
   : T extends `${infer P}${D}${infer S}`
   ? SplitHelper<S, D, [...Acc, P]>
   : [...Acc, T];
+
+export type Join<
+  T extends readonly string[],
+  U extends string | number,
+> = T extends [infer Head extends string, ...infer Rest extends string[]]
+  ? `${Head}${JoinHelper<Rest, U>}`
+  : "";
+
+type JoinHelper<
+  T extends readonly string[],
+  U extends string | number,
+> = T extends [
+  infer Head extends string,
+  ...infer Rest extends readonly string[],
+]
+  ? `${U}${Head}${JoinHelper<Rest, U>}`
+  : "";
+
+export type UnionToIntersection<U> = (
+  U extends any ? (arg: U) => any : never
+) extends (arg: infer I) => void
+  ? I
+  : never;
+
+// Retrieves the last element of a union by wrapping every element in a dummy
+// function type, then inferring the argument.
+//
+// Similarly to how TypeScript handles overloaded functions, the conditional
+// targets the last element of the intersection specifically, resulting in the
+// last element of the union.
+export type LastInUnion<U> = UnionToIntersection<
+  U extends any ? (arg: U) => void : never
+> extends (arg: infer Last) => void
+  ? Last
+  : never;
+
+export type UnionToTuple<U> = [U] extends [never]
+  ? []
+  : LastInUnion<U> extends infer Last
+  ? [...UnionToTuple<Exclude<U, Last>>, Last]
+  : never;
+
+export type ObjectEntries<T> = {
+  [Key in keyof T]-?: [
+    Key,
+    T[Key] extends infer Value | undefined ? Value : undefined,
+  ];
+}[keyof T];
 
 type Whitespace = " " | "\n" | "\t";
 
@@ -45,7 +95,7 @@ export type All<T extends boolean[]> = T extends [
   : true;
 
 type Predecessor = {
-  0: never;
+  0: 9;
   1: 0;
   2: 1;
   3: 2;
@@ -67,9 +117,6 @@ type Successor = {
   6: 7;
   7: 8;
   8: 9;
-  // Invariant: the only digit with a successor of 0 is 9, meaning we don't
-  // need any extra information to determine whether we need to carry. Getting
-  // a 0 while adding two digits is enough.
   9: 0;
 };
 
@@ -119,6 +166,40 @@ export type SumDigits<
   ? SumDigitsWithCarry<Left, Right>
   : SumDigitsWithoutCarry<Left, Right>;
 
+type SubtractDigitsWithoutCarry<
+  Left extends Digit,
+  Right extends Digit,
+  Carry extends boolean = false,
+> = Right extends 0
+  ? [Left, Carry]
+  : Predecessor[Left] extends infer LeftPredecessor extends Digit
+  ? SubtractDigitsWithoutCarry<
+      LeftPredecessor,
+      Predecessor[Right],
+      LeftPredecessor extends 9 ? true : Carry
+    >
+  : never;
+
+type SubtractDigitsWithCarry<
+  Left extends Digit,
+  Right extends Digit,
+> = Predecessor[Left] extends infer LeftPredecessor extends Digit
+  ? SubtractDigitsWithoutCarry<LeftPredecessor, Right> extends [
+      infer Result extends Digit,
+      infer Carry extends boolean,
+    ]
+    ? [Result, LeftPredecessor extends 9 ? true : Carry]
+    : never
+  : never;
+
+type SubtractDigits<
+  Left extends Digit,
+  Right extends Digit,
+  Carry extends boolean,
+> = Carry extends true
+  ? SubtractDigitsWithCarry<Left, Right>
+  : SubtractDigitsWithoutCarry<Left, Right>;
+
 export type ToDigits<Value extends string> = Value extends `${infer Head extends
   keyof StringToDigit}${infer Rest}`
   ? [StringToDigit[Head], ...ToDigits<Rest>]
@@ -141,7 +222,7 @@ export type Tail<T extends readonly unknown[]> = T extends [
   ...infer Tail,
 ]
   ? Tail
-  : never;
+  : [];
 
 export type Init<T extends readonly unknown[]> = T extends [
   ...infer Init,
@@ -174,6 +255,22 @@ export type SumDigitSlices<
       infer Carry extends boolean,
     ]
   ? [...SumDigitSlices<Init<Left>, Init<Right>, Carry>, Result]
+  : never;
+
+type SubtractDigitSlices<
+  Left extends readonly Digit[],
+  Right extends readonly Digit[],
+  Carry extends boolean = false,
+> = BothEmpty<Left, Right> extends true
+  ? Carry extends true
+    ? // If we ran out of digits and we still need to carry, the result is negative.
+      never
+    : []
+  : SubtractDigits<LastDigit<Left>, LastDigit<Right>, Carry> extends [
+      infer Result,
+      infer Carry extends boolean,
+    ]
+  ? [...SubtractDigitSlices<Init<Left>, Init<Right>, Carry>, Result]
   : never;
 
 export type DigitsToString<Digits extends readonly Digit[]> = Digits extends [
@@ -246,6 +343,11 @@ export type TrimLeadingZeros<Value extends readonly Digit[]> = Value extends [0]
   ? TrimLeadingZeros<Rest>
   : Value;
 
+export type Abs<T extends number | bigint | string> =
+  `${T}` extends `-${infer Abs extends number | bigint}`
+    ? [Abs, false]
+    : [T, true];
+
 export type Sum<
   Left extends number | bigint | string,
   Right extends number | bigint | string,
@@ -254,6 +356,20 @@ export type Sum<
   ToDigits<`${Right}`>
 > extends infer Result extends readonly Digit[]
   ? DigitsToString<Result>
+  : never;
+
+export type Subtract<
+  Left extends number | bigint | string,
+  Right extends number | bigint | string,
+> = SmallerThan<Left, Right> extends infer Negative extends boolean
+  ? SubtractDigitSlices<
+      ToDigits<Negative extends true ? `${Right}` : `${Left}`>,
+      ToDigits<Negative extends true ? `${Left}` : `${Right}`>
+    > extends infer Result extends readonly Digit[]
+    ? DigitsToString<TrimLeadingZeros<Result>> extends infer S extends string
+      ? `${Negative extends true ? "-" : ""}${S}`
+      : never
+    : never
   : never;
 
 export type Multiply<
@@ -333,7 +449,26 @@ export type SmallerThan<
 export type SmallerThanOrEqual<
   Left extends string | number | bigint,
   Right extends string | number | bigint,
-> = CompareDigitSlices<ToDigits<`${Left}`>, ToDigits<`${Right}`>>;
+> = Abs<Left> extends [
+  infer AbsLeft extends string | number | bigint,
+  infer SignLeft extends boolean,
+]
+  ? Abs<Right> extends [
+      infer AbsRight extends string | number | bigint,
+      infer SignRight extends boolean,
+    ]
+    ? SignLeft extends SignRight
+      ? CompareDigitSlices<
+          ToDigits<`${AbsLeft}`>,
+          ToDigits<`${AbsRight}`>
+        > extends infer Result extends boolean
+        ? SignLeft extends true
+          ? Result
+          : Not<Result>
+        : never
+      : SignRight
+    : never
+  : never;
 
 export type Min<
   Left extends string | number | bigint,
@@ -344,3 +479,16 @@ export type Max<
   Left extends string | number | bigint,
   Right extends string | number | bigint,
 > = SmallerThanOrEqual<Left, Right> extends true ? Right : Left;
+
+export type Range<
+  L extends string | number | bigint,
+  R extends string | number | bigint,
+> = SmallerThanOrEqual<L, R> extends false
+  ? never
+  : RangeHelper<`${L}`, `${R}`>;
+
+export type RangeHelper<
+  L extends string,
+  R extends string,
+  Acc extends string[] = [],
+> = L extends R ? Acc : RangeHelper<Sum<L, 1>, R, [...Acc, L]>;
