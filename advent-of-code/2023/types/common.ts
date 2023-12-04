@@ -33,6 +33,19 @@ type JoinHelper<
   ? `${U}${Head}${JoinHelper<Rest, U>}`
   : "";
 
+export type Filter<
+  T extends unknown[],
+  S,
+  Acc extends unknown[] = [],
+> = T extends [infer Head, ...infer Rest]
+  ? Filter<Rest, S, Head extends S ? Acc : [...Acc, Head]>
+  : Acc;
+
+export type FilterInv<T extends unknown[], S> = Filter<
+  T,
+  Exclude<T[number], S>
+>;
+
 export type UnionToIntersection<U> = (
   U extends any ? (arg: U) => any : never
 ) extends (arg: infer I) => void
