@@ -20,3 +20,5 @@ module L: {
 let clamp: (int, int, int) => int;
 
 let range: (int, int) => Seq.t(int);
+
+let pow: (int, int) => int;

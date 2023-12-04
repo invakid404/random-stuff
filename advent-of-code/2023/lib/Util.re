@@ -73,3 +73,12 @@ let range = (l, r) => {
 
   () => range_helper(l);
 };
+
+let rec pow = (a, n) =>
+  switch (n) {
+  | 0 => 1
+  | 1 => a
+  | _ =>
+    let b = pow(a, n / 2);
+    b * b * (n mod 2 == 0 ? 1 : a);
+  };
