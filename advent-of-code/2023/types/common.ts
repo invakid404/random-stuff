@@ -33,6 +33,34 @@ type JoinHelper<
   ? `${U}${Head}${JoinHelper<Rest, U>}`
   : "";
 
+export type Chunk<
+  T extends readonly unknown[],
+  Size extends number,
+> = ChunkHelper<T, Size>;
+
+type ChunkHelper<
+  T extends readonly unknown[],
+  Size extends number,
+  Acc extends readonly unknown[] = [],
+> = T["length"] extends 0
+  ? Acc
+  : NextChunk<T, Size> extends [
+      infer Chunk,
+      infer Rest extends readonly unknown[],
+    ]
+  ? ChunkHelper<Rest, Size, [...Acc, Chunk]>
+  : never;
+
+type NextChunk<
+  T extends readonly unknown[],
+  Size extends number,
+  Acc extends readonly unknown[] = [],
+> = Acc["length"] extends Size
+  ? [Acc, T]
+  : T extends [infer Head, ...infer Rest]
+  ? NextChunk<Rest, Size, [...Acc, Head]>
+  : [Acc, T];
+
 export type Filter<
   T extends unknown[],
   S,
@@ -96,6 +124,15 @@ type ReverseHelper<
   Acc extends readonly unknown[] = [],
 > = T extends [...infer Init, infer Last]
   ? ReverseHelper<Init, [...Acc, Last]>
+  : Acc;
+
+export type ReverseStr<T extends string> = ReverseStrHelper<T>;
+
+type ReverseStrHelper<
+  T extends string,
+  Acc extends string = "",
+> = T extends `${infer Head}${infer Rest}`
+  ? ReverseStrHelper<Rest, `${Head}${Acc}`>
   : Acc;
 
 export type All<T extends boolean[]> = T extends [
