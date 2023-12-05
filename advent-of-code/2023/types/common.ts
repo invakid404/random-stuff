@@ -542,3 +542,153 @@ export type RangeHelper<
   R extends string,
   Acc extends string[] = [],
 > = L extends R ? Acc : RangeHelper<Sum<L, 1>, R, [...Acc, L]>;
+
+type SplitAt<
+  Arr extends readonly any[],
+  Index extends number,
+  InitAccumulator extends readonly any[] = [],
+> = Arr extends []
+  ? [InitAccumulator, Arr]
+  : InitAccumulator["length"] extends Index
+  ? [InitAccumulator, Arr]
+  : SplitAt<Tail<Arr>, Index, [...InitAccumulator, Arr[0]]>;
+
+type Drop<Array extends readonly any[], Index extends number> = SplitAt<
+  Array,
+  Index
+> extends [
+  infer Left extends readonly any[],
+  infer Right extends readonly any[],
+]
+  ? [...Left, ...Tail<Right>]
+  : never;
+
+enum Comparison {
+  Greater,
+  Equal,
+  Lower,
+}
+
+type Compare<
+  Left extends string | number | bigint,
+  Right extends string | number | bigint,
+> = `${Left}` extends `${Right}`
+  ? Comparison.Equal
+  : SmallerThanOrEqual<Left, Right> extends true
+  ? Comparison.Lower
+  : Comparison.Greater;
+
+type CompareWithDirection<
+  Left extends string | number | bigint,
+  Right extends string | number | bigint,
+  Direction extends boolean,
+> = Compare<Left, Right> extends infer Result
+  ? Result extends Comparison.Equal
+    ? Result
+    : Direction extends false
+    ? Result
+    : Result extends Comparison.Lower
+    ? Comparison.Greater
+    : Comparison.Lower
+  : never;
+
+type Partition<
+  Array extends readonly Sortable[],
+  PivotIndex extends number,
+  Direction extends boolean,
+> = PartitionWithValue<Drop<Array, PivotIndex>, Array[PivotIndex], Direction>;
+
+type PartitionWithValue<
+  Array extends readonly Sortable[],
+  Pivot extends Sortable,
+  Direction extends boolean,
+  Left extends readonly any[] = [],
+  Right extends readonly any[] = [],
+> = Array extends [
+  infer Head extends Sortable,
+  ...infer Tail extends readonly Sortable[],
+]
+  ? CompareSortables<Head, Pivot, Direction> extends Comparison.Lower
+    ? PartitionWithValue<Tail, Pivot, Direction, [...Left, Head], Right>
+    : PartitionWithValue<Tail, Pivot, Direction, Left, [...Right, Head]>
+  : [Left, Right];
+
+type Sort<
+  Array extends readonly Sortable[],
+  Direction extends boolean = false,
+> = Array extends []
+  ? []
+  : Partition<Array, 0, Direction> extends [
+      infer Left extends readonly Sortable[],
+      infer Right extends readonly Sortable[],
+    ]
+  ? [...Sort<Left, Direction>, Array[0], ...Sort<Right, Direction>]
+  : never;
+
+type Sortable = number | { value: number };
+
+type SortableToNumber<T extends Sortable> = T extends object ? T["value"] : T;
+
+type CompareSortables<
+  Left extends Sortable,
+  Right extends Sortable,
+  Direction extends boolean,
+> = CompareWithDirection<
+  SortableToNumber<Left>,
+  SortableToNumber<Right>,
+  Direction
+>;
+
+declare const sortSymbol: unique symbol;
+
+export type SortBy<
+  Array extends readonly object[],
+  Key extends keyof Array[number],
+> = Sort<ToSortable<Array, Key>> extends infer Sorted extends Sortable[]
+  ? RestoreValues<Sorted>
+  : never;
+
+type ToSortable<
+  Array extends readonly object[],
+  Key extends keyof Array[number],
+  Acc extends Sortable[] = [],
+> = Array extends [
+  infer Head extends object,
+  ...infer Rest extends readonly object[],
+]
+  ? Key extends keyof Head
+    ? Head[Key] extends number | `${number}`
+      ? ToSortable<
+          Rest,
+          Key,
+          [
+            ...Acc,
+            { value: ToNumber<Head[Key]> } & {
+              [Key in typeof sortSymbol]?: Head;
+            },
+          ]
+        >
+      : never
+    : never
+  : Acc;
+
+type ToNumber<T extends string | number> = T extends number
+  ? T
+  : T extends `${infer N extends number}`
+  ? N
+  : never;
+
+type RestoreValues<
+  T extends Sortable[],
+  Acc extends readonly object[] = [],
+> = T extends [infer Head extends Sortable, ...infer Rest extends Sortable[]]
+  ? RestoreValue<Head> extends infer V extends object
+    ? RestoreValues<Rest, [...Acc, V]>
+    : never
+  : Acc;
+
+type RestoreValue<T extends Sortable> = typeof sortSymbol extends keyof T
+  ? Exclude<T[typeof sortSymbol], undefined>
+  : never;
+
+export type MaxSafeInteger = 9007199254740991;
