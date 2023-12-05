@@ -1,3 +1,11 @@
+let read_all = file => {
+  let input = open_in(file);
+  let res = really_input_string(input, in_channel_length(input));
+
+  close_in(input);
+  res;
+};
+
 let read_lines = file => {
   let input = open_in(file);
   let rec collect_lines = () => {
@@ -47,11 +55,19 @@ module S = {
 };
 
 module L = {
-  let for_each = (f, seq) => {
-    let _ = List.map(f, seq);
+  let for_each = (f, lst) => {
+    let _ = List.map(f, lst);
 
     ();
   };
+
+  exception EmptyList;
+
+  let min = lst =>
+    switch (lst) {
+    | [] => raise(EmptyList)
+    | [head, ...rest] => List.fold_left(min, head, rest)
+    };
 };
 
 let clamp = (l, r, x) => min(max(x, l), r);

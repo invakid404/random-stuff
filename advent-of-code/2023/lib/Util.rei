@@ -1,3 +1,5 @@
+let read_all: string => string;
+
 let read_lines: string => Seq.t(string);
 
 let is_digit: char => bool;
@@ -15,6 +17,8 @@ module S: {
 
 module L: {
   let for_each: ('a => unit, list('a)) => unit;
+
+  let min: list('a) => 'a;
 };
 
 let clamp: (int, int, int) => int;
