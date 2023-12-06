@@ -98,3 +98,7 @@ let rec pow = (a, n) =>
     let b = pow(a, n / 2);
     b * b * (n mod 2 == 0 ? 1 : a);
   };
+
+let int_length = n => truncate(log10(float_of_int(n))) + 1;
+
+let int_concat = (x, y) => x * pow(10, int_length(y)) + y;

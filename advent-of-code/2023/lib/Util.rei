@@ -26,3 +26,7 @@ let clamp: (int, int, int) => int;
 let range: (int, int) => Seq.t(int);
 
 let pow: (int, int) => int;
+
+let int_length: int => int;
+
+let int_concat: (int, int) => int;

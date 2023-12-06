@@ -1,5 +1,5 @@
 (executables
- (names day01 day02 day03 day04 day05)
- (public_names day01 day02 day03 day04 day05)
+ (names day01 day02 day03 day04 day05 day06)
+ (public_names day01 day02 day03 day04 day05 day06)
  (libraries lib str)
  (modes native))
