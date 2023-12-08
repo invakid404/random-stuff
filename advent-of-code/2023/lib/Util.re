@@ -102,3 +102,17 @@ let rec pow = (a, n) =>
 let int_length = n => truncate(log10(float_of_int(n))) + 1;
 
 let int_concat = (x, y) => x * pow(10, int_length(y)) + y;
+
+let rec gcd = (u, v) =>
+  if (v != 0) {
+    gcd(v, u mod v);
+  } else {
+    abs(u);
+  };
+
+let lcm = (m, n) =>
+  switch (m, n) {
+  | (0, _)
+  | (_, 0) => 0
+  | (m, n) => abs(m * n) / gcd(m, n)
+  };

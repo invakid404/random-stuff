@@ -30,3 +30,6 @@ let pow: (int, int) => int;
 let int_length: int => int;
 
 let int_concat: (int, int) => int;
+
+let gcd: (int, int) => int;
+let lcm: (int, int) => int;
