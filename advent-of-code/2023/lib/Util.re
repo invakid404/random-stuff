@@ -68,6 +68,17 @@ module L = {
     | [] => raise(EmptyList)
     | [head, ...rest] => List.fold_left(min, head, rest)
     };
+
+  let zip = (l, r) => {
+    let rec zip_helper = (l, r, acc) =>
+      switch (l, r) {
+      | ([l_head, ...l_rest], [r_head, ...r_rest]) =>
+        zip_helper(l_rest, r_rest, [(l_head, r_head), ...acc])
+      | _ => List.rev(acc)
+      };
+
+    zip_helper(l, r, []);
+  };
 };
 
 let clamp = (l, r, x) => min(max(x, l), r);
@@ -116,3 +127,5 @@ let lcm = (m, n) =>
   | (_, 0) => 0
   | (m, n) => abs(m * n) / gcd(m, n)
   };
+
+let (>>) = (f, g, x) => g(f(x));

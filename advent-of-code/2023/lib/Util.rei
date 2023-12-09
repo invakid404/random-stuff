@@ -19,6 +19,8 @@ module L: {
   let for_each: ('a => unit, list('a)) => unit;
 
   let min: list('a) => 'a;
+
+  let zip: (list('a), list('b)) => list(('a, 'b));
 };
 
 let clamp: (int, int, int) => int;
@@ -33,3 +35,5 @@ let int_concat: (int, int) => int;
 
 let gcd: (int, int) => int;
 let lcm: (int, int) => int;
+
+let (>>): ('a => 'b, 'b => 'c, 'a) => 'c;
