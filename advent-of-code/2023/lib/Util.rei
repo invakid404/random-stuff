@@ -19,8 +19,11 @@ module L: {
   let for_each: ('a => unit, list('a)) => unit;
 
   let min: list('a) => 'a;
+  let max: list('a) => 'a;
 
   let zip: (list('a), list('b)) => list(('a, 'b));
+
+  let unique: list('a) => list('a);
 };
 
 let clamp: (int, int, int) => int;

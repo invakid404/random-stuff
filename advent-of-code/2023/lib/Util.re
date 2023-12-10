@@ -69,6 +69,12 @@ module L = {
     | [head, ...rest] => List.fold_left(min, head, rest)
     };
 
+  let max = lst =>
+    switch (lst) {
+    | [] => raise(EmptyList)
+    | [head, ...rest] => List.fold_left(max, head, rest)
+    };
+
   let zip = (l, r) => {
     let rec zip_helper = (l, r, acc) =>
       switch (l, r) {
@@ -78,6 +84,13 @@ module L = {
       };
 
     zip_helper(l, r, []);
+  };
+
+  let unique = lst => {
+    let tbl = Hashtbl.create(List.length(lst));
+    for_each(x => {Hashtbl.replace(tbl, x, ())}, lst);
+
+    Hashtbl.to_seq_keys(tbl) |> List.of_seq;
   };
 };
 
