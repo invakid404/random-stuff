@@ -14,6 +14,7 @@
     "@opam/dune": "*",
     "@opam/js_of_ocaml": "5.4.0",
     "@opam/js_of_ocaml-ppx": "5.4.0",
+    "@opam/pyml": "20231101",
     "@opam/reason": "*",
     "ocaml": "4.14.x"
   },

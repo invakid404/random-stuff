@@ -26,6 +26,10 @@ module L: {
   let unique: list('a) => list('a);
 };
 
+module A: {
+  let transpose: array(array('a)) => array(array('a));
+};
+
 let clamp: (int, int, int) => int;
 
 let range: (int, int) => Seq.t(int);

@@ -94,6 +94,26 @@ module L = {
   };
 };
 
+module A = {
+  let transpose = matrix => {
+    let rows = Array.length(matrix);
+    let cols = rows > 0 ? Array.length(matrix[0]) : 0;
+
+    let transposed = Array.make(cols, [||]);
+
+    for (i in 0 to cols - 1) {
+      let new_row = Array.make(rows, matrix[0][0]);
+      for (j in 0 to rows - 1) {
+        new_row[j] = matrix[j][i];
+      };
+
+      transposed[i] = new_row;
+    };
+
+    transposed;
+  };
+};
+
 let clamp = (l, r, x) => min(max(x, l), r);
 
 exception InvalidRange(int, int);
