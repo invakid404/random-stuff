@@ -92,6 +92,21 @@ module L = {
 
     Hashtbl.to_seq_keys(tbl) |> List.of_seq;
   };
+
+  let upsert_first = (predicate, new_value, list) => {
+    let rec upsert_helper = (acc, lst) =>
+      switch (lst) {
+      | [] => List.rev([new_value, ...acc])
+      | [head, ...tail] =>
+        if (predicate(head)) {
+          List.rev(acc) @ [new_value, ...tail];
+        } else {
+          upsert_helper([head, ...acc], tail);
+        }
+      };
+
+    upsert_helper([], list);
+  };
 };
 
 module A = {

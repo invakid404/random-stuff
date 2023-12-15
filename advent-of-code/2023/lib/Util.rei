@@ -24,6 +24,8 @@ module L: {
   let zip: (list('a), list('b)) => list(('a, 'b));
 
   let unique: list('a) => list('a);
+
+  let upsert_first: ('a => bool, 'a, list('a)) => list('a);
 };
 
 module A: {
