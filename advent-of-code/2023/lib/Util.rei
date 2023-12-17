@@ -13,6 +13,10 @@ let ($^): (char, string) => string;
 
 module S: {
   let for_each: ('a => unit, Seq.t('a)) => unit;
+
+  let scan_left: (('b, 'a) => 'b, 'b, Seq.t('a)) => Seq.t('b);
+
+  let scan_left1: (('a, 'a) => 'a, Seq.t('a)) => Seq.t('a);
 };
 
 module L: {

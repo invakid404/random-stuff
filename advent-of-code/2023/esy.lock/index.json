@@ -1,5 +1,5 @@
 {
-  "checksum": "76bb738c2aed1e368adafea9205bca11",
+  "checksum": "29b40c7852b5cce2bd3e14f4af82ceae",
   "root": "advent-of-code-2023@link-dev:./package.json",
   "node": {
     "ocaml@4.14.1000@d41d8cd9": {
@@ -59,12 +59,13 @@
         "@opam/pyml@opam:20231101@52efa7b4",
         "@opam/js_of_ocaml-ppx@opam:5.4.0@716bd640",
         "@opam/js_of_ocaml@opam:5.4.0@23177c64",
-        "@opam/dune@opam:3.12.1@da6ffbfa"
+        "@opam/dune@opam:3.12.1@da6ffbfa",
+        "@opam/containers@opam:3.13@e8b9b820"
       ],
       "devDependencies": [
         "@opam/odoc@opam:2.2.2@a43a5ec4",
         "@opam/ocamlformat@opam:0.26.1@3a835116",
-        "@opam/ocaml-lsp-server@opam:1.16.2@6e0031b9",
+        "@opam/ocaml-lsp-server@opam:1.16.1@b7306101",
         "@opam/merlin@opam:4.13-414@3f34cd37"
       ]
     },
@@ -1038,20 +1039,20 @@
         "ocaml@4.14.1000@d41d8cd9", "@opam/dune@opam:3.12.1@da6ffbfa"
       ]
     },
-    "@opam/ocaml-lsp-server@opam:1.16.2@6e0031b9": {
-      "id": "@opam/ocaml-lsp-server@opam:1.16.2@6e0031b9",
+    "@opam/ocaml-lsp-server@opam:1.16.1@b7306101": {
+      "id": "@opam/ocaml-lsp-server@opam:1.16.1@b7306101",
       "name": "@opam/ocaml-lsp-server",
-      "version": "opam:1.16.2",
+      "version": "opam:1.16.1",
       "source": {
         "type": "install",
         "source": [
-          "archive:https://opam.ocaml.org/cache/sha256/14/1487d5a4e2f2d4f023341058551bdb8ba86c23367b7c5b4fdda3aa7dc02aaec4#sha256:1487d5a4e2f2d4f023341058551bdb8ba86c23367b7c5b4fdda3aa7dc02aaec4",
-          "archive:https://github.com/ocaml/ocaml-lsp/releases/download/1.16.2/lsp-1.16.2.tbz#sha256:1487d5a4e2f2d4f023341058551bdb8ba86c23367b7c5b4fdda3aa7dc02aaec4"
+          "archive:https://opam.ocaml.org/cache/sha256/84/84fb305afbb9935e03bec286dc938f9e4ae768c1766e8d10238e0d812a8c04e6#sha256:84fb305afbb9935e03bec286dc938f9e4ae768c1766e8d10238e0d812a8c04e6",
+          "archive:https://github.com/ocaml/ocaml-lsp/releases/download/1.16.1/lsp-1.16.1.tbz#sha256:84fb305afbb9935e03bec286dc938f9e4ae768c1766e8d10238e0d812a8c04e6"
         ],
         "opam": {
           "name": "ocaml-lsp-server",
-          "version": "1.16.2",
-          "path": "esy.lock/opam/ocaml-lsp-server.1.16.2"
+          "version": "1.16.1",
+          "path": "esy.lock/opam/ocaml-lsp-server.1.16.1"
         }
       },
       "overrides": [],
@@ -1748,6 +1749,37 @@
       "devDependencies": [
         "ocaml@4.14.1000@d41d8cd9", "@opam/dune@opam:3.12.1@da6ffbfa",
         "@opam/base-unix@opam:base@87d0b2eb"
+      ]
+    },
+    "@opam/containers@opam:3.13@e8b9b820": {
+      "id": "@opam/containers@opam:3.13@e8b9b820",
+      "name": "@opam/containers",
+      "version": "opam:3.13",
+      "source": {
+        "type": "install",
+        "source": [
+          "archive:https://opam.ocaml.org/cache/sha256/37/372df86e2a41e86c959c28a3392eb2ffd89754d1e5af2aaa09537654af57b1da#sha256:372df86e2a41e86c959c28a3392eb2ffd89754d1e5af2aaa09537654af57b1da",
+          "archive:https://github.com/c-cube/ocaml-containers/releases/download/v3.13/containers-3.13.tbz#sha256:372df86e2a41e86c959c28a3392eb2ffd89754d1e5af2aaa09537654af57b1da"
+        ],
+        "opam": {
+          "name": "containers",
+          "version": "3.13",
+          "path": "esy.lock/opam/containers.3.13"
+        }
+      },
+      "overrides": [],
+      "dependencies": [
+        "ocaml@4.14.1000@d41d8cd9", "@opam/either@opam:1.0.0@be5a1416",
+        "@opam/dune-configurator@opam:3.12.1@13f69e99",
+        "@opam/dune@opam:3.12.1@da6ffbfa",
+        "@opam/base-unix@opam:base@87d0b2eb",
+        "@opam/base-threads@opam:base@36803084",
+        "@esy-ocaml/substs@0.0.1@d41d8cd9"
+      ],
+      "devDependencies": [
+        "ocaml@4.14.1000@d41d8cd9", "@opam/either@opam:1.0.0@be5a1416",
+        "@opam/dune-configurator@opam:3.12.1@13f69e99",
+        "@opam/dune@opam:3.12.1@da6ffbfa"
       ]
     },
     "@opam/conf-which@opam:1@c7485f7d": {

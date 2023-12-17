@@ -11,6 +11,7 @@
     "doc": "esy dune build @doc"
   },
   "dependencies": {
+    "@opam/containers": "3.13",
     "@opam/dune": "*",
     "@opam/js_of_ocaml": "5.4.0",
     "@opam/js_of_ocaml-ppx": "5.4.0",

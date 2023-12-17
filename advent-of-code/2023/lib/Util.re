@@ -52,6 +52,25 @@ module S = {
 
     ();
   };
+
+  let scan_left = (f, initial, seq) => {
+    let rec scan_left_helper = (acc, seq) =>
+      switch (Seq.uncons(seq)) {
+      | None => Seq.Nil
+      | Some((head, rest)) =>
+        let next = f(acc, head);
+        Seq.Cons(next, () => scan_left_helper(next, rest));
+      };
+
+    () => scan_left_helper(initial, seq);
+  };
+
+  let scan_left1 = (f, seq) => {
+    switch (Seq.uncons(seq)) {
+    | None => (() => Seq.Nil)
+    | Some((head, _)) => scan_left(f, head, seq)
+    };
+  };
 };
 
 module L = {
