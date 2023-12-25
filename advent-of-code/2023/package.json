@@ -17,6 +17,7 @@
     "@opam/js_of_ocaml-ppx": "5.4.0",
     "@opam/pyml": "20231101",
     "@opam/reason": "*",
+    "@opam/z3": "4.12.4",
     "ocaml": "4.14.x"
   },
   "devDependencies": {

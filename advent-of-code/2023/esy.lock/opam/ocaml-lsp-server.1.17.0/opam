@@ -31,7 +31,8 @@ depends: [
   "ordering"
   "dune-build-info"
   "spawn"
-  "odoc-parser" {>= "2.0.0" & < "2.3.0"}
+  "astring"
+  "camlp-streams"
   "ppx_expect" {>= "v0.15.0" & with-test}
   "ocamlformat" {with-test & = "0.24.1"}
   "ocamlc-loc" {>= "3.7.0"}
@@ -57,10 +58,10 @@ build: [
 ]
 url {
   src:
-    "https://github.com/ocaml/ocaml-lsp/releases/download/1.16.1/lsp-1.16.1.tbz"
+    "https://github.com/ocaml/ocaml-lsp/releases/download/1.17.0/lsp-1.17.0.tbz"
   checksum: [
-    "sha256=84fb305afbb9935e03bec286dc938f9e4ae768c1766e8d10238e0d812a8c04e6"
-    "sha512=eae42ed16c5e38f7512dfc6338ecae6d9a13054e9821cffbc9afd6fc79a0736ef81b55222e4a2d49ba51ec8a08009c06a4bbdfe424460c0b3a54e28b23fda36e"
+    "sha256=8fb8bbd717eefd2608b4d83458105b660e0de3a1134dc8fc216ae659d4d19600"
+    "sha512=6876df760dbcb51f85e7fd9d08cc8498c69ede38a52f4e12407187da3fbd9657c71f3223f9490ad97edd5259cfdeb2819d943db65bb9ce3c2a18dace3b65ffa8"
   ]
 }
-x-commit-hash: "1f78031bcaecda696419e893253333566fcd87f3"
+x-commit-hash: "d3d8de5a4213c2a16e43ac4f87cbbe88a894d05f"
