@@ -65,28 +65,58 @@ type LengthOfString<S extends string> = LengthOfStringHelper<S, Q100k> extends [
 /* _____________ Test Cases _____________ */
 import type { Equal, Expect } from '@type-challenges/utils';
 
-type Deced = [10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-type Signum = Deced[number];
-type Reped<
-  S extends string,
-  C extends Signum,
-  R extends string = '',
-> = C extends 0 ? R : Reped<S, Deced[C], `${R}${S}`>;
-type t0 = 'k';
-type t1 = Reped<t0, 10>;
-type t2 = Reped<t1, 10>;
-type t3 = Reped<t2, 10>;
-type t4 = Reped<t3, 10>;
-type t5 = Reped<t4, 10>;
-type t6 = Reped<t5, 10>;
-type Gened<N extends string> = N extends `${''}${infer N6 extends
-  Signum}${infer N5 extends Signum}${infer N4 extends Signum}${infer N3 extends
-  Signum}${infer N2 extends Signum}${infer N1 extends Signum}${infer N0 extends
-  Signum}`
-  ? `${''}${Reped<t6, N6>}${Reped<t5, N5>}${Reped<t4, N4>}${Reped<
-      t3,
-      N3
-    >}${Reped<t2, N2>}${Reped<t1, N1>}${Reped<t0, N0>}`
+type Pred = [never, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+type Digit = Pred[number];
+
+type Repeat<
+  T extends string,
+  N extends Digit,
+  Acc extends string = '',
+> = N extends 0 ? Acc : Repeat<T, Pred[N], `${Acc}${T}`>;
+
+type T1 = 'k';
+type T10 = `${T1}${T1}${T1}${T1}${T1}${T1}${T1}${T1}${T1}${T1}`;
+type T100 = `${T10}${T10}${T10}${T10}${T10}${T10}${T10}${T10}${T10}${T10}`;
+type T1K =
+  `${T100}${T100}${T100}${T100}${T100}${T100}${T100}${T100}${T100}${T100}`;
+type T10K = `${T1K}${T1K}${T1K}${T1K}${T1K}${T1K}${T1K}${T1K}${T1K}${T1K}`;
+type T100K =
+  `${T10K}${T10K}${T10K}${T10K}${T10K}${T10K}${T10K}${T10K}${T10K}${T10K}`;
+type T1M =
+  `${T100K}${T100K}${T100K}${T100K}${T100K}${T100K}${T100K}${T100K}${T100K}${T100K}`;
+
+type Digits<
+  T extends string,
+  Acc extends readonly Digit[] = [],
+> = T extends `${infer Head extends Digit}${infer Rest}`
+  ? Digits<Rest, [...Acc, Head]>
+  : Acc;
+
+type Gened<T extends string> = Digits<T> extends [
+  infer C1M extends Digit,
+  infer C100K extends Digit,
+  infer C10K extends Digit,
+  infer C1K extends Digit,
+  infer C100 extends Digit,
+  infer C10 extends Digit,
+  infer C1 extends Digit,
+]
+  ? Repeat<T1M, C1M> extends infer R1M extends string
+    ? Repeat<T100K, C100K> extends infer R100K extends string
+      ? Repeat<T10K, C10K> extends infer R10K extends string
+        ? Repeat<T1K, C1K> extends infer R1K extends string
+          ? Repeat<T100, C100> extends infer R100 extends string
+            ? Repeat<T10, C10> extends infer R10 extends string
+              ? Repeat<T1, C1> extends infer R1 extends string
+                ? `${R1M}${R100K}${R10K}${R1K}${R100}${R10}${R1}`
+                : never
+              : never
+            : never
+          : never
+        : never
+      : never
+    : never
   : never;
 
 type cases = [
