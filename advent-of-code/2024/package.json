@@ -1,0 +1,23 @@
+{
+  "name": "aoc-2024",
+  "private": true,
+  "type": "module",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "ts-morph": "^24.0.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "@ts-morph/common": "patches/@ts-morph__common.patch"
+    }
+  }
+}
