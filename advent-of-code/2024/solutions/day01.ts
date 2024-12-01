@@ -3,6 +3,9 @@ import {
   Abs,
   Add,
   Chain,
+  Equal,
+  Filter,
+  Flip,
   MapWith,
   Reduce,
   Sort,
@@ -37,4 +40,20 @@ export type Part1<Input extends string> = $<
   Input
 >;
 
-export type Part2<Input extends string> = never;
+export type Part2<Input extends string> =
+  $<Parser, Input> extends [
+    infer Left extends number[],
+    infer Right extends number[],
+  ]
+    ? $<
+        $<
+          Chain,
+          [
+            $<MapWith, $<Chain, [Equal, $<$<Flip, Filter>, Right>]>>,
+            $<MapWith, $<Reduce, [Add, 0]>>,
+            $<Reduce, [Add, 0]>,
+          ]
+        >,
+        Left
+      >
+    : never;

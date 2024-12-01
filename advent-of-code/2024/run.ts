@@ -21,7 +21,11 @@ const evaluateType = (sourceFile: SourceFile, name: string, input: string) => {
     );
 };
 
-const evaluate = async (solutionPath: string, input: string) => {
+const evaluate = async (
+  solutionPath: string,
+  input: string,
+  part?: number | null,
+) => {
   const configPath = path.join(__dirname, "tsconfig.json");
 
   const project = new Project({
@@ -31,11 +35,15 @@ const evaluate = async (solutionPath: string, input: string) => {
   const sourceFile = project.getSourceFile(solutionPath);
   assert(sourceFile != null);
 
-  const part1 = evaluateType(sourceFile, "Part1", input);
-  const part2 = evaluateType(sourceFile, "Part2", input);
+  if (part == null || part === 1) {
+    const part1 = evaluateType(sourceFile, "Part1", input);
+    console.log("Part 1:", part1);
+  }
 
-  console.log("Part 1:", part1);
-  console.log("Part 2:", part2);
+  if (part == null || part === 2) {
+    const part2 = evaluateType(sourceFile, "Part2", input);
+    console.log("Part 2:", part2);
+  }
 };
 
 const exists = (path: string) =>
@@ -44,7 +52,7 @@ const exists = (path: string) =>
     () => false,
   );
 
-const run = async (day: number) => {
+const run = async (day: number, part?: number | null) => {
   const baseName = `day${day.toString().padStart(2, "0")}`;
 
   const solutionFile = path.join(__dirname, `solutions/${baseName}.ts`);
@@ -55,13 +63,16 @@ const run = async (day: number) => {
 
   const input = (await fs.readFile(inputFile, "utf-8")).trim();
 
-  return evaluate(solutionFile, input);
+  return evaluate(solutionFile, input, part);
 };
 
 const args = process.argv.slice(2);
-assert(args.length === 1, "No day provided");
+assert(args.length >= 1, "No day provided");
+
+const part = args.length >= 2 ? parseInt(args[1]) : null;
+assert(part == null || !isNaN(part), "Part must be a number");
 
 const day = parseInt(args[0], 10);
 assert(!isNaN(day), "Day must be a number");
 
-await run(day);
+await run(day, part);

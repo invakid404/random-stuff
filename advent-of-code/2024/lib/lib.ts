@@ -1,4 +1,4 @@
-type Equal<X, Y> =
+type $Equal<X, Y> =
   (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2
     ? true
     : false;
@@ -351,7 +351,7 @@ type $Add<
         infer RightAbs extends string | bigint | number,
         infer RightSign extends boolean,
       ]
-      ? Equal<LeftSign, RightSign> extends true
+      ? $Equal<LeftSign, RightSign> extends true
         ? ApplySign<AddInner<LeftAbs, RightAbs>, LeftSign>
         : LeftSign extends true
           ? $Subtract<LeftAbs, RightAbs>
@@ -482,8 +482,8 @@ type $Subtract<
         infer RightAbs extends string | bigint | number,
         infer RightSign extends boolean,
       ]
-      ? Equal<LeftSign, RightSign> extends true
-        ? Equal<LeftSign, true> extends true
+      ? $Equal<LeftSign, RightSign> extends true
+        ? $Equal<LeftSign, true> extends true
           ? $Compare<LeftAbs, RightAbs> extends CompareResult.Lt
             ? ApplySign<SubtractInner<RightAbs, LeftAbs>, false>
             : SubtractInner<LeftAbs, RightAbs>
@@ -599,4 +599,53 @@ type $Reduce<
   ...infer Rest extends Array<InputOf<Op>[number]>,
 ]
   ? $Reduce<Rest, Op, $<Op, [Acc, Head]>>
+  : Acc;
+
+type HKTWithImpl = HKT<(arg: never) => HKT>;
+
+export interface Flip extends HKT {
+  fn: (input: Cast<this[_], HKTWithImpl>) => Flipped<typeof input>;
+}
+
+interface Flipped<Op extends HKTWithImpl> extends HKT {
+  fn: (
+    innerInput: Cast<this[_], InputOf<ReturnType<(Op & { [_]: any })["fn"]>>>,
+  ) => FlippedImpl<Op, typeof innerInput>;
+}
+
+interface FlippedImpl<Op extends HKTWithImpl, InnerInput> extends HKT {
+  fn: (
+    outerInput: Cast<this[_], InputOf<Op>>,
+  ) => $<$<Op, typeof outerInput>, InnerInput>;
+}
+
+export interface Equal extends HKT {
+  fn: (input: Cast<this[_], unknown>) => EqualImpl<typeof input>;
+}
+
+export interface EqualImpl<T> extends HKT {
+  fn: (input: Cast<this[_], unknown>) => $Equal<T, typeof input>;
+}
+
+export interface Filter extends HKT {
+  fn: (op: Cast<this[_], HKT>) => FilterImpl<typeof op>;
+}
+
+interface FilterImpl<Op extends HKT> extends HKT {
+  fn: (input: Cast<this[_], Array<InputOf<Op>>>) => $Filter<typeof input, Op>;
+}
+
+type $Filter<
+  T extends Array<InputOf<Op>>,
+  Op extends HKT,
+  Acc extends unknown[] = [],
+> = T extends [
+  infer Head extends InputOf<Op>,
+  ...infer Rest extends Array<InputOf<Op>>,
+]
+  ? $Filter<
+      Rest,
+      Op,
+      $Equal<$<Op, Head>, false> extends true ? Acc : [...Acc, Head]
+    >
   : Acc;
