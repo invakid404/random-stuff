@@ -2,14 +2,14 @@ import {
   $,
   Abs,
   Add,
-  Apply,
+  ApplyMany,
+  Apply_,
   At,
   CartesianProduct,
   Chain,
   Equal,
   Filter,
   Flip,
-  Lift,
   MapWith,
   Reduce,
   Sort,
@@ -51,14 +51,14 @@ export type Part2<Input extends string> = $<
     [
       Parser,
       $<
-        Lift,
+        ApplyMany,
         [
           $<Chain, [$<At, 1>, $<Flip, Filter>, ToArray]>,
           $<Chain, [$<At, 0>, $<MapWith, Equal>]>,
         ]
       >,
       CartesianProduct,
-      $<MapWith, $<Chain, [Apply, $<Reduce, [Add, 0]>]>>,
+      $<MapWith, $<Chain, [Apply_, $<Reduce, [Add, 0]>]>>,
       $<Reduce, [Add, 0]>,
     ]
   >,

@@ -3,6 +3,7 @@ import {
   All,
   And,
   Any,
+  ApplyMany,
   At,
   CartesianProduct,
   Chain,
@@ -12,7 +13,6 @@ import {
   Identity,
   Length,
   LessThan,
-  Lift,
   MapWith,
   RangeFrom,
   SplitBy,
@@ -36,7 +36,7 @@ type IsSafe = $<
     $<Windows, 2>,
     $<MapWith, Subtract>,
     $<
-      Lift,
+      ApplyMany,
       [
         $<All, $<And, [$<GreaterThan, 0>, $<LessThan, 4>]>>,
         $<All, $<And, [$<LessThan, 0>, $<GreaterThan, -4>]>>,
@@ -54,7 +54,7 @@ export type Part1<Input extends string> = $<
 type IsSafeAfterRemoval = $<
   Chain,
   [
-    $<Lift, [ToArray, $<Chain, [Length, $<RangeFrom, 0>]>]>,
+    $<ApplyMany, [ToArray, $<Chain, [Length, $<RangeFrom, 0>]>]>,
     CartesianProduct,
     $<MapWith, DropAt_>,
     $<Any, IsSafe>,

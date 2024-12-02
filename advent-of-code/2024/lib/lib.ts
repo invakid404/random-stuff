@@ -750,20 +750,22 @@ type $Any<T extends Array<InputOf<Op>>, Op extends HKT> = T extends [
     : $Any<Rest, Op>
   : false;
 
-export interface Lift extends HKT {
-  fn: (ops: Cast<this[_], HKT[]>) => LiftImpl<typeof ops>;
+export interface ApplyMany extends HKT {
+  fn: (ops: Cast<this[_], HKT[]>) => ApplyManyImpl<typeof ops>;
 }
 
-interface LiftImpl<Ops extends HKT[]> extends HKT {
-  fn: (input: Cast<this[_], InputOf<Ops[number]>>) => $Lift<typeof input, Ops>;
+interface ApplyManyImpl<Ops extends HKT[]> extends HKT {
+  fn: (
+    input: Cast<this[_], InputOf<Ops[number]>>,
+  ) => $ApplyMany<typeof input, Ops>;
 }
 
-type $Lift<
+type $ApplyMany<
   T extends InputOf<Ops[number]>,
   Ops extends HKT[],
   Acc extends unknown[] = [],
 > = Ops extends [infer Head extends HKT, ...infer Rest extends HKT[]]
-  ? $Lift<T, Rest, [...Acc, $<Head, T>]>
+  ? $ApplyMany<T, Rest, [...Acc, $<Head, T>]>
   : Acc;
 
 export interface Identity extends HKT {
@@ -845,11 +847,11 @@ export interface DropAt_ extends HKT {
   ) => $DropAt<(typeof input)[0], (typeof input)[1]>;
 }
 
-export interface Apply extends HKT {
+export interface Apply_ extends HKT {
   fn: (
     input: Cast<this[_], [HKT, unknown]>,
-  ) => $Apply<(typeof input)[0], (typeof input)[1]>;
+  ) => $Apply_<(typeof input)[0], (typeof input)[1]>;
 }
 
-type $Apply<Op extends HKT, Input> =
+type $Apply_<Op extends HKT, Input> =
   Input extends InputOf<Op> ? $<Op, Input> : never;
