@@ -844,3 +844,12 @@ export interface DropAt_ extends HKT {
     input: Cast<this[_], [unknown[], number]>,
   ) => $DropAt<(typeof input)[0], (typeof input)[1]>;
 }
+
+export interface Apply extends HKT {
+  fn: (
+    input: Cast<this[_], [HKT, unknown]>,
+  ) => $Apply<(typeof input)[0], (typeof input)[1]>;
+}
+
+type $Apply<Op extends HKT, Input> =
+  Input extends InputOf<Op> ? $<Op, Input> : never;

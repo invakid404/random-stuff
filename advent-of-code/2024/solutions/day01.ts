@@ -2,15 +2,20 @@ import {
   $,
   Abs,
   Add,
+  Apply,
+  At,
+  CartesianProduct,
   Chain,
   Equal,
   Filter,
   Flip,
+  Lift,
   MapWith,
   Reduce,
   Sort,
   SplitBy,
   Subtract,
+  ToArray,
   ToNumber,
   Transpose,
 } from "../lib/lib.js";
@@ -40,20 +45,22 @@ export type Part1<Input extends string> = $<
   Input
 >;
 
-export type Part2<Input extends string> =
-  $<Parser, Input> extends [
-    infer Left extends number[],
-    infer Right extends number[],
-  ]
-    ? $<
-        $<
-          Chain,
-          [
-            $<MapWith, $<Chain, [Equal, $<$<Flip, Filter>, Right>]>>,
-            $<MapWith, $<Reduce, [Add, 0]>>,
-            $<Reduce, [Add, 0]>,
-          ]
-        >,
-        Left
-      >
-    : never;
+export type Part2<Input extends string> = $<
+  $<
+    Chain,
+    [
+      Parser,
+      $<
+        Lift,
+        [
+          $<Chain, [$<At, 1>, $<Flip, Filter>, ToArray]>,
+          $<Chain, [$<At, 0>, $<MapWith, Equal>]>,
+        ]
+      >,
+      CartesianProduct,
+      $<MapWith, $<Chain, [Apply, $<Reduce, [Add, 0]>]>>,
+      $<Reduce, [Add, 0]>,
+    ]
+  >,
+  Input
+>;
