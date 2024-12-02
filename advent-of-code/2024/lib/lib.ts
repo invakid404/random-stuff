@@ -649,3 +649,127 @@ type $Filter<
       $Equal<$<Op, Head>, false> extends true ? Acc : [...Acc, Head]
     >
   : Acc;
+
+export interface Windows extends HKT {
+  fn: (length: Cast<this[_], number>) => WindowsImpl<typeof length>;
+}
+
+interface WindowsImpl<L extends number> extends HKT {
+  fn: (input: Cast<this[_], unknown[]>) => $Windows<typeof input, L>;
+}
+
+type $Windows<
+  T extends unknown[],
+  L extends number,
+  Acc extends unknown[][] = [],
+> =
+  Take<T, L> extends infer W extends unknown[]
+    ? L extends W["length"]
+      ? $Windows<Tail<T>, L, [...Acc, W]>
+      : Acc
+    : never;
+
+type Take<
+  T extends unknown[],
+  L extends number,
+  Acc extends unknown[] = [],
+> = L extends Acc["length"]
+  ? Acc
+  : T extends [infer Head, ...infer Rest]
+    ? Take<Rest, L, [...Acc, Head]>
+    : Acc;
+
+export interface LessThan extends HKT {
+  fn: (value: Cast<this[_], number>) => LessThanImpl<typeof value>;
+}
+
+interface LessThanImpl<V extends number> extends HKT {
+  fn: (
+    value: Cast<this[_], number>,
+  ) => $Compare<typeof value, V> extends CompareResult.Lt ? true : false;
+}
+
+export interface GreaterThan extends HKT {
+  fn: (value: Cast<this[_], number>) => GreaterThanImpl<typeof value>;
+}
+
+interface GreaterThanImpl<V extends number> extends HKT {
+  fn: (
+    value: Cast<this[_], number>,
+  ) => $Compare<typeof value, V> extends CompareResult.Gt ? true : false;
+}
+
+export interface And extends HKT {
+  fn: (ops: Cast<this[_], HKT[]>) => AndImpl<typeof ops>;
+}
+
+interface AndImpl<Ops extends HKT[]> extends HKT {
+  fn: (input: Cast<this[_], InputOf<Ops[number]>>) => $And<typeof input, Ops>;
+}
+
+type $And<T extends InputOf<Ops[number]>, Ops extends HKT[]> = Ops extends [
+  infer Head extends HKT,
+  ...infer Rest extends HKT[],
+]
+  ? $Equal<$<Head, T>, false> extends true
+    ? false
+    : $And<T, Rest>
+  : true;
+
+export interface All extends HKT {
+  fn: (ops: Cast<this[_], HKT>) => AllImpl<typeof ops>;
+}
+
+interface AllImpl<Op extends HKT> extends HKT {
+  fn: (input: Cast<this[_], Array<InputOf<Op>>>) => $All<typeof input, Op>;
+}
+
+type $All<T extends Array<InputOf<Op>>, Op extends HKT> = T extends [
+  infer Head extends InputOf<Op>,
+  ...infer Rest extends Array<InputOf<Op>>,
+]
+  ? $Equal<$<Op, Head>, false> extends true
+    ? false
+    : $All<Rest, Op>
+  : true;
+
+export interface Any extends HKT {
+  fn: (ops: Cast<this[_], HKT>) => AnyImpl<typeof ops>;
+}
+
+interface AnyImpl<Op extends HKT> extends HKT {
+  fn: (input: Cast<this[_], Array<InputOf<Op>>>) => $Any<typeof input, Op>;
+}
+
+type $Any<T extends Array<InputOf<Op>>, Op extends HKT> = T extends [
+  infer Head extends InputOf<Op>,
+  ...infer Rest extends Array<InputOf<Op>>,
+]
+  ? $Equal<$<Op, Head>, true> extends true
+    ? true
+    : $Any<Rest, Op>
+  : false;
+
+export interface Lift extends HKT {
+  fn: (ops: Cast<this[_], HKT[]>) => LiftImpl<typeof ops>;
+}
+
+interface LiftImpl<Ops extends HKT[]> extends HKT {
+  fn: (input: Cast<this[_], InputOf<Ops[number]>>) => $Lift<typeof input, Ops>;
+}
+
+type $Lift<
+  T extends InputOf<Ops[number]>,
+  Ops extends HKT[],
+  Acc extends unknown[] = [],
+> = Ops extends [infer Head extends HKT, ...infer Rest extends HKT[]]
+  ? $Lift<T, Rest, [...Acc, $<Head, T>]>
+  : Acc;
+
+export interface Identity extends HKT {
+  fn: (input: Cast<this[_], unknown>) => typeof input;
+}
+
+export interface Length extends HKT {
+  fn: (input: Cast<this[_], unknown[]>) => (typeof input)["length"];
+}
