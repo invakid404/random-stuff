@@ -9,7 +9,7 @@ declare const _: unique symbol;
 
 type _ = typeof _;
 
-declare abstract class HKT<F extends Fn = Fn> {
+export declare abstract class HKT<F extends Fn = Fn> {
   abstract readonly [_]: unknown;
   fn: F;
 }
@@ -281,7 +281,7 @@ type Partition<
   PivotIndex extends number,
   Direction extends boolean,
 > = PartitionWithValue<
-  DropAt<[...Array], PivotIndex>,
+  $DropAt<[...Array], PivotIndex>,
   Array[PivotIndex],
   Direction
 >;
@@ -298,7 +298,7 @@ type PartitionWithValue<
     : PartitionWithValue<Tail, Pivot, Direction, Left, [...Right, Head]>
   : [Left, Right];
 
-type DropAt<Array extends unknown[], Index extends number> =
+type $DropAt<Array extends unknown[], Index extends number> =
   SplitAt<Array, Index> extends [
     infer Left extends unknown[],
     infer Right extends unknown[],
@@ -772,4 +772,75 @@ export interface Identity extends HKT {
 
 export interface Length extends HKT {
   fn: (input: Cast<this[_], unknown[]>) => (typeof input)["length"];
+}
+
+export interface Range extends HKT {
+  fn: (
+    input: Cast<this[_], [number, number]>,
+  ) => $Range<(typeof input)[0], (typeof input)[1]>;
+}
+
+type $Range<L extends number, R extends number> =
+  $Compare<L, R> extends CompareResult.Lt ? RangeHelper<L, R> : [];
+
+type RangeHelper<
+  L extends number,
+  R extends number,
+  Acc extends number[] = [],
+> = $Equal<L, R> extends true ? Acc : RangeHelper<$Add<L, 1>, R, [...Acc, L]>;
+
+export interface RangeFrom extends HKT {
+  fn: (input: Cast<this[_], number>) => RangeFromImpl<typeof input>;
+}
+
+interface RangeFromImpl<L extends number> extends HKT {
+  fn: (input: Cast<this[_], number>) => $Range<L, typeof input>;
+}
+
+export interface At extends HKT {
+  fn: (index: Cast<this[_], number>) => AtImpl<typeof index>;
+}
+
+interface AtImpl<I extends number> extends HKT {
+  fn: (input: Cast<this[_], unknown[]>) => (typeof input)[I];
+}
+
+export interface ToArray extends HKT {
+  fn: (input: Cast<this[_], unknown>) => [typeof input];
+}
+
+export interface CartesianProduct extends HKT {
+  fn: (
+    input: Cast<this[_], [unknown[], unknown[]]>,
+  ) => $CartesianProduct<(typeof input)[0], (typeof input)[1]>;
+}
+
+type $CartesianProduct<
+  T extends unknown[],
+  U extends unknown[],
+  Acc extends Array<[unknown, unknown]> = [],
+> = T extends [infer Head, ...infer Rest]
+  ? $CartesianProduct<Rest, U, [...Acc, ...CartesianProductInner<Head, U>]>
+  : Acc;
+
+type CartesianProductInner<
+  T extends unknown,
+  U extends unknown[],
+  Acc extends Array<[unknown, unknown]> = [],
+> = U extends [infer Head, ...infer Rest]
+  ? CartesianProductInner<T, Rest, [...Acc, [T, Head]]>
+  : Acc;
+
+export interface DropAt extends HKT {
+  fn: (input: Cast<this[_], number>) => DropAtImpl<typeof input>;
+}
+
+interface DropAtImpl<I extends number> extends HKT {
+  fn: (input: Cast<this[_], unknown[]>) => $DropAt<typeof input, I>;
+}
+
+export interface DropAt_ extends HKT {
+  fn: (
+    input: Cast<this[_], [unknown[], number]>,
+  ) => $DropAt<(typeof input)[0], (typeof input)[1]>;
 }

@@ -3,7 +3,10 @@ import {
   All,
   And,
   Any,
+  At,
+  CartesianProduct,
   Chain,
+  DropAt_,
   Filter,
   GreaterThan,
   Identity,
@@ -11,8 +14,10 @@ import {
   LessThan,
   Lift,
   MapWith,
+  RangeFrom,
   SplitBy,
   Subtract,
+  ToArray,
   ToNumber,
   Windows,
 } from "../lib/lib.js";
@@ -46,4 +51,17 @@ export type Part1<Input extends string> = $<
   Input
 >;
 
-export type Part2<Input extends string> = never;
+type IsSafeAfterRemoval = $<
+  Chain,
+  [
+    $<Lift, [ToArray, $<Chain, [Length, $<RangeFrom, 0>]>]>,
+    CartesianProduct,
+    $<MapWith, DropAt_>,
+    $<Any, IsSafe>,
+  ]
+>;
+
+export type Part2<Input extends string> = $<
+  $<Chain, [Parser, $<Filter, IsSafeAfterRemoval>, Length]>,
+  Input
+>;
