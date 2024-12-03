@@ -1,3 +1,5 @@
+import { Parse, Parser, ParserInput, ParserResult } from "./parser.js";
+
 type $Equal<X, Y> =
   (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2
     ? true
@@ -855,3 +857,117 @@ export interface Apply_ extends HKT {
 
 type $Apply_<Op extends HKT, Input> =
   Input extends InputOf<Op> ? $<Op, Input> : never;
+
+export interface MustRunParser extends HKT {
+  fn: (input: Cast<this[_], Parser>) => MustRunParserImpl<typeof input>;
+}
+
+interface MustRunParserImpl<P extends Parser> extends HKT {
+  fn: (
+    input: Cast<this[_], ParserInput<P>>,
+  ) => Parse<P, typeof input> extends infer R extends ParserResult<any, string>
+    ? $Equal<R["success"], true> extends true
+      ? R["data"]
+      : never
+    : never;
+}
+
+export interface FilterNever extends HKT {
+  fn: (input: Cast<this[_], unknown[]>) => $FilterNever<typeof input>;
+}
+
+type $FilterNever<T extends unknown[], Acc extends unknown[] = []> = T extends [
+  infer Head,
+  ...infer Rest,
+]
+  ? $FilterNever<Rest, [Head] extends [never] ? Acc : [...Acc, Head]>
+  : Acc;
+
+export interface Multiply extends HKT {
+  fn: (
+    input: Cast<this[_], [number, number]>,
+  ) => $Multiply<(typeof input)[0], (typeof input)[1]>;
+}
+
+type $Multiply<
+  Left extends string | number | bigint,
+  Right extends string | number | bigint,
+> =
+  AbsWithSign<Left> extends [
+    infer LeftAbs extends string | bigint | number,
+    infer LeftSign extends boolean,
+  ]
+    ? AbsWithSign<Right> extends [
+        infer RightAbs extends string | bigint | number,
+        infer RightSign extends boolean,
+      ]
+      ? ApplySign<MultiplyInner<LeftAbs, RightAbs>, $Equal<LeftSign, RightSign>>
+      : never
+    : never;
+
+type MultiplyInner<
+  Left extends string | number | bigint,
+  Right extends string | number | bigint,
+> =
+  MultiplyDigitSlices<
+    $Digits<`${Left}`>,
+    $Digits<`${Right}`>
+  > extends infer Result extends Digit[]
+    ? $ToNumber<DigitsToString<Result>>
+    : never;
+
+type MultiplyDigitSlices<
+  Left extends Digit[],
+  Right extends Digit[],
+  Padding extends Digit[] = [],
+> = Right extends []
+  ? [0]
+  : SumDigitSlices<
+      [...MultiplyWithDigit<Left, LastOrDefault<Right, 0>>, ...Padding],
+      MultiplyDigitSlices<
+        Left,
+        Init<Right>,
+        [...Padding, 0]
+      > extends infer R extends Digit[]
+        ? R
+        : never
+    >;
+
+type MultiplyWithDigit<
+  Value extends Digit[],
+  Factor extends Digit,
+  Result extends Digit[] = [],
+  Carry extends Digit = 0,
+> = Value extends []
+  ? Carry extends 0
+    ? Result
+    : [Carry, ...Result]
+  : SumDigitSlices<
+        MultiplicationTable[LastOrDefault<Value, 0>][Factor],
+        [Carry]
+      > extends infer Current extends readonly Digit[]
+    ? Current extends [infer Carry extends Digit, infer Out extends Digit]
+      ? MultiplyWithDigit<Init<Value>, Factor, [Out, ...Result], Carry>
+      : MultiplyWithDigit<Init<Value>, Factor, [...Current, ...Result], 0>
+    : never;
+
+type MultiplicationTable = { [key in Digit]: MultiplicationRow<key> };
+
+type MultiplicationRow<
+  Value extends Digit,
+  Accumulator extends Digit[][] = [[0]],
+> = Accumulator["length"] extends 10
+  ? Accumulator
+  : Accumulator extends [...any[], infer Last extends Digit[]]
+    ? SumDigitSlices<Last, [Value]> extends infer Result extends Digit[]
+      ? MultiplicationRow<Value, [...Accumulator, Result]>
+      : never
+    : never;
+
+export interface Extends extends HKT {
+  fn: (input: Cast<this[_], unknown>) => ExtendsImpl<typeof input>;
+}
+
+interface ExtendsImpl<T> extends HKT {
+  fn: (input: Cast<this[_], unknown>) => typeof input extends T ? true : false;
+}
