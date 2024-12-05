@@ -7,9 +7,9 @@ type $Equal<X, Y> =
 
 type Fn = (arg: never) => unknown;
 
-declare const _: unique symbol;
+export declare const _: unique symbol;
 
-type _ = typeof _;
+export type _ = typeof _;
 
 export declare abstract class HKT<F extends Fn = Fn> {
   abstract readonly [_]: unknown;
@@ -22,7 +22,7 @@ export type $<T extends HKT, U extends InputOf<T>> = ReturnType<
   (T & { [_]: U })["fn"]
 >;
 
-type Cast<T, U> = T extends U ? T : U;
+export type Cast<T, U> = T extends U ? T : U;
 
 export interface SplitBy extends HKT {
   fn: (delimiter: Cast<this[_], string>) => SplitImpl<typeof delimiter>;
@@ -341,6 +341,14 @@ export interface Add extends HKT {
   ) => $Add<(typeof input)[0], (typeof input)[1]>;
 }
 
+export interface AddTo extends HKT {
+  fn: (input: Cast<this[_], number>) => AddToImpl<typeof input>;
+}
+
+interface AddToImpl<L extends number> extends HKT {
+  fn: (input: Cast<this[_], number>) => $Add<L, typeof input>;
+}
+
 type $Add<
   Left extends number | bigint | string,
   Right extends number | bigint | string,
@@ -603,6 +611,34 @@ type $Reduce<
   ? $Reduce<Rest, Op, $<Op, [Acc, Head]>>
   : Acc;
 
+export interface MapReduce extends HKT {
+  fn: (
+    input: Cast<
+      this[_],
+      [HKT<(arg: any) => any>, HKT<(arg: [any, any]) => any>, any]
+    >,
+  ) => MapReduceImpl<(typeof input)[0], (typeof input)[1], (typeof input)[2]>;
+}
+
+interface MapReduceImpl<
+  MapOp extends HKT<(any: any) => any>,
+  ReduceOp extends HKT<(arg: [any, any]) => any>,
+  Init extends InputOf<MapOp>,
+> extends HKT {
+  fn: (
+    input: Cast<this[_], Array<InputOf<MapOp>>>,
+  ) => $MapReduce<typeof input, MapOp, ReduceOp, Init>;
+}
+
+type $MapReduce<
+  T extends readonly any[],
+  MapOp extends HKT<(any: any) => any>,
+  ReduceOp extends HKT<(arg: [any, any]) => any>,
+  Acc extends any,
+> = T extends [infer Head, ...infer Rest]
+  ? $MapReduce<Rest, MapOp, ReduceOp, $<ReduceOp, [Acc, $<MapOp, Head>]>>
+  : Acc;
+
 type HKTWithImpl = HKT<(arg: never) => HKT>;
 
 export interface Flip extends HKT {
@@ -628,6 +664,30 @@ export interface Equal extends HKT {
 export interface EqualImpl<T> extends HKT {
   fn: (input: Cast<this[_], unknown>) => $Equal<T, typeof input>;
 }
+
+export interface Equal_ extends HKT {
+  fn: (
+    input: Cast<this[_], [unknown, unknown]>,
+  ) => $Equal<(typeof input)[0], (typeof input)[1]>;
+}
+
+export interface DiffObjects_ extends HKT {
+  fn: (
+    input: Cast<this[_], [object, object]>,
+  ) => $DiffObjects<(typeof input)[0], (typeof input)[1]>;
+}
+
+type $DiffObjects<T, U> = {
+  [P in Exclude<keyof T, keyof U>]: T[P];
+} & {
+  [P in Exclude<keyof U, keyof T>]: U[P];
+} & {
+  [P in Extract<keyof T, keyof U> as $<Equal_, [T[P], U[P]]> extends false
+    ? P
+    : never]:
+    | Exclude<T[P], Extract<T[P], U[P]>>
+    | Exclude<U[P], Extract<U[P], T[P]>>;
+};
 
 export interface Filter extends HKT {
   fn: (op: Cast<this[_], HKT>) => FilterImpl<typeof op>;
@@ -701,6 +761,16 @@ interface GreaterThanImpl<V extends number> extends HKT {
   ) => $Compare<typeof value, V> extends CompareResult.Gt ? true : false;
 }
 
+export interface GreaterThanOrEquals extends HKT {
+  fn: (value: Cast<this[_], number>) => GreaterThanOrEqualsImpl<typeof value>;
+}
+
+interface GreaterThanOrEqualsImpl<V extends number> extends HKT {
+  fn: (
+    value: Cast<this[_], number>,
+  ) => $Compare<typeof value, V> extends CompareResult.Lt ? false : true;
+}
+
 export interface And extends HKT {
   fn: (ops: Cast<this[_], HKT[]>) => AndImpl<typeof ops>;
 }
@@ -766,17 +836,24 @@ type $ApplyMany<
   T extends InputOf<Ops[number]>,
   Ops extends HKT[],
   Acc extends unknown[] = [],
-> = Ops extends [infer Head extends HKT, ...infer Rest extends HKT[]]
-  ? $ApplyMany<T, Rest, [...Acc, $<Head, T>]>
-  : Acc;
+> = {
+  [Key in keyof Ops]: $<Ops[Key], T>;
+};
 
 export interface Identity extends HKT {
   fn: (input: Cast<this[_], unknown>) => typeof input;
 }
 
 export interface Length extends HKT {
-  fn: (input: Cast<this[_], unknown[]>) => (typeof input)["length"];
+  fn: (input: Cast<this[_], unknown[]>) => $Length<typeof input>;
 }
+
+type $Length<T extends unknown[], Acc extends number = 0> = T extends [
+  infer Head,
+  ...infer Rest,
+]
+  ? $Length<Rest, $<Add, [Acc, 1]>>
+  : Acc;
 
 export interface Range extends HKT {
   fn: (
@@ -809,6 +886,32 @@ interface AtImpl<I extends number> extends HKT {
   fn: (input: Cast<this[_], unknown[]>) => (typeof input)[I];
 }
 
+export interface AtDeep extends HKT {
+  fn: (indices: Cast<this[_], number[]>) => $AtDeep<typeof indices>;
+}
+
+type $AtDeep<T extends number[], Acc extends HKT[] = []> = T extends [
+  infer Head extends number,
+  ...infer Rest extends number[],
+]
+  ? $AtDeep<Rest, [...Acc, $<At, Head>]>
+  : $<Chain, Acc>;
+
+export interface Middle extends HKT {
+  fn: (input: Cast<this[_], unknown[]>) => $Middle<typeof input>;
+}
+
+type $Middle<T extends unknown[]> = T[MiddleHelper<
+  T,
+  0,
+  $<Subtract, [T["length"], 1]>
+>];
+
+type MiddleHelper<T extends unknown[], L extends number, R extends number> =
+  $<Compare, [L, R]> extends CompareResult.Lt
+    ? MiddleHelper<T, $<Add, [L, 1]>, $<Subtract, [R, 1]>>
+    : L;
+
 export interface ToArray extends HKT {
   fn: (input: Cast<this[_], unknown>) => [typeof input];
 }
@@ -822,18 +925,35 @@ export interface CartesianProduct extends HKT {
 type $CartesianProduct<
   T extends unknown[],
   U extends unknown[],
-  Acc extends Array<[unknown, unknown]> = [],
-> = T extends [infer Head, ...infer Rest]
-  ? $CartesianProduct<Rest, U, [...Acc, ...CartesianProductInner<Head, U>]>
+> = $FlattenDepth<
+  {
+    [TK in keyof T]: {
+      [UK in keyof U]: [T[TK], U[UK]];
+    };
+  },
+  1
+>;
+
+export interface Tails extends HKT {
+  fn: (input: Cast<this[_], unknown[]>) => $Tails<typeof input>;
+}
+
+type $Tails<T extends unknown[], Acc extends unknown[][] = []> = T extends [
+  unknown,
+  ...infer Rest extends unknown[],
+]
+  ? $Tails<Rest, [...Acc, Rest]>
   : Acc;
 
-type CartesianProductInner<
-  T extends unknown,
-  U extends unknown[],
-  Acc extends Array<[unknown, unknown]> = [],
-> = U extends [infer Head, ...infer Rest]
-  ? CartesianProductInner<T, Rest, [...Acc, [T, Head]]>
-  : Acc;
+export interface Zip extends HKT {
+  fn: (
+    input: Cast<this[_], [unknown[], unknown[]]>,
+  ) => $Zip<(typeof input)[0], (typeof input)[1]>;
+}
+
+type $Zip<L extends unknown[], R extends unknown[]> = {
+  [Key in keyof L]: [L[Key], Key extends keyof R ? R[Key] : never];
+};
 
 export interface DropAt extends HKT {
   fn: (input: Cast<this[_], number>) => DropAtImpl<typeof input>;
@@ -887,6 +1007,14 @@ export interface Multiply extends HKT {
   fn: (
     input: Cast<this[_], [number, number]>,
   ) => $Multiply<(typeof input)[0], (typeof input)[1]>;
+}
+
+export interface MultiplyBy extends HKT {
+  fn: (input: Cast<this[_], number>) => MultiplyByImpl<typeof input>;
+}
+
+interface MultiplyByImpl<T extends number> extends HKT {
+  fn: (input: Cast<this[_], number>) => $Multiply<typeof input, T>;
 }
 
 type $Multiply<
@@ -971,3 +1099,486 @@ export interface Extends extends HKT {
 interface ExtendsImpl<T> extends HKT {
   fn: (input: Cast<this[_], unknown>) => typeof input extends T ? true : false;
 }
+
+export interface Repeat extends HKT {
+  fn: (input: Cast<this[_], number>) => RepeatImpl<typeof input>;
+}
+
+interface RepeatImpl<N extends number> extends HKT {
+  fn: (input: Cast<this[_], unknown>) => $Repeat<typeof input, N>;
+}
+
+export interface InObject extends HKT {
+  fn: (
+    input: Cast<this[_], Record<PropertyKey, any>>,
+  ) => ExtendsImpl<keyof typeof input>;
+}
+
+type $Repeat<
+  T,
+  N extends number,
+  Acc extends unknown[] = [],
+> = Acc["length"] extends N ? Acc : $Repeat<T, N, [...Acc, T]>;
+
+export interface Join extends HKT {
+  fn: (delimiter: Cast<this[_], string>) => JoinImpl<typeof delimiter>;
+}
+
+type Joinable = string | number | boolean;
+
+interface JoinImpl<D extends string> extends HKT {
+  fn: (input: Cast<this[_], Joinable[]>) => $Join<typeof input, D>;
+}
+
+type $Join<
+  T extends Joinable[],
+  D extends string,
+  Acc extends string = "",
+> = T extends [infer Head extends Joinable, ...infer Rest extends Joinable[]]
+  ? $Join<Rest, D, "" extends Acc ? `${Head}` : `${Acc},${Head}`>
+  : Acc;
+
+export interface Return extends HKT {
+  fn: (input: Cast<this[_], unknown>) => ReturnImpl<typeof input>;
+}
+
+interface ReturnImpl<T> extends HKT {
+  fn: (_input: Cast<this[_], unknown>) => T;
+}
+
+export interface FlattenDepth extends HKT {
+  fn: (input: Cast<this[_], number>) => FlattenDepthImpl<typeof input>;
+}
+
+interface FlattenDepthImpl<D extends number> extends HKT {
+  fn: (input: Cast<this[_], unknown[]>) => $FlattenDepth<typeof input, D>;
+}
+
+type $FlattenDepth<
+  T extends readonly unknown[],
+  Depth extends number,
+> = Depth extends 0
+  ? T
+  : T extends [infer Head, ...infer Rest]
+    ? [
+        ...(Head extends readonly unknown[]
+          ? $FlattenDepth<Head, $<Subtract, [Depth, 1]>>
+          : [Head]),
+        ...$FlattenDepth<Rest, Depth>,
+      ]
+    : [];
+
+export interface Push extends HKT {
+  fn: (input: Cast<this[_], unknown>) => PushImpl<typeof input>;
+}
+
+interface PushImpl<T> extends HKT {
+  fn: (input: Cast<this[_], unknown>) => $Push<typeof input, T>;
+}
+
+type $Push<T, U> = T extends unknown[] ? [...T, U] : [T, U];
+
+export interface Intersect_ extends HKT {
+  fn: (
+    input: Cast<this[_], [unknown, unknown]>,
+  ) => $Intersect<(typeof input)[0], (typeof input)[1]>;
+}
+
+type $Intersect<T, U> = {
+  [Key in keyof T]: Key extends keyof U ? T[Key] & U[Key] : never;
+};
+
+export interface EvalIntersection extends HKT {
+  fn: (input: Cast<this[_], unknown>) => Omit<typeof input, never>;
+}
+
+export interface MergeObjects_ extends HKT {
+  fn: (
+    input: Cast<
+      this[_],
+      [Record<PropertyKey, unknown>, Record<PropertyKey, unknown>]
+    >,
+  ) => $MergeObjects<(typeof input)[0], (typeof input)[1]>;
+}
+
+type $MergeObjects<
+  L extends Record<PropertyKey, unknown>,
+  R extends Record<PropertyKey, unknown>,
+> = Omit<L, keyof R> & R;
+
+export interface ObjectFromEntries extends HKT {
+  fn: (
+    input: Cast<this[_], Array<[PropertyKey, unknown]>>,
+  ) => $ObjectFromEntries<typeof input>;
+}
+
+type $ObjectFromEntries<
+  Entries extends Array<[PropertyKey, unknown]>,
+  Acc = never,
+> = Entries extends [
+  infer Head extends [PropertyKey, unknown],
+  ...infer Rest extends Array<[PropertyKey, unknown]>,
+]
+  ? $ObjectFromEntries<Rest, Acc | { [Key in Head[0]]: Head[1] }>
+  : UnionToIntersection<Acc>;
+
+type EntriesToObjects<T> = T extends [infer Key extends string, infer Value]
+  ? { [K in Key]: Value }
+  : never;
+
+export interface TupleToUnion extends HKT {
+  fn: (input: Cast<this[_], unknown[]>) => (typeof input)[number];
+}
+
+export interface UnionToTuple extends HKT {
+  fn: (input: Cast<this[_], unknown>) => $UnionToTuple<typeof input>;
+}
+
+type $UnionToTuple<U> = [U] extends [never]
+  ? []
+  : LastInUnion<U> extends infer Last
+    ? [...$UnionToTuple<Exclude<U, Last>>, Last]
+    : never;
+
+type UnionToIntersection<U> = (
+  U extends any ? (arg: U) => any : never
+) extends (arg: infer I) => void
+  ? I
+  : never;
+
+type LastInUnion<U> =
+  UnionToIntersection<U extends any ? (arg: U) => void : never> extends (
+    arg: infer Last,
+  ) => void
+    ? Last
+    : never;
+
+export interface Chunk extends HKT {
+  fn: (size: Cast<this[_], number>) => ChunkImpl<typeof size>;
+}
+
+interface ChunkImpl<S extends number> extends HKT {
+  fn: (input: Cast<this[_], unknown[]>) => $Chunk<typeof input, S>;
+}
+
+type $Chunk<
+  T extends unknown[],
+  S extends number,
+  Acc extends unknown[][] = [],
+  Current extends unknown[] = [],
+> = T extends [infer Head, ...infer Rest]
+  ? $Equal<Current["length"], S> extends true
+    ? $Chunk<Rest, S, [...Acc, Current], [Head]>
+    : $Chunk<Rest, S, Acc, [...Current, Head]>
+  : $Equal<Current["length"], 0> extends true
+    ? Acc
+    : [...Acc, Current];
+
+export interface GridSearch extends HKT {
+  fn: (
+    input: Cast<this[_], [[number, number], HKT?]>,
+  ) => GridSearchImpl<(typeof input)[0], (typeof input)[1]>;
+}
+
+interface GridSearchImpl<
+  DepthLimits extends [number, number],
+  Filter extends HKT | undefined = undefined,
+> extends HKT {
+  fn: (
+    input: Cast<this[_], unknown[][]>,
+  ) => $GridSearch<typeof input, DepthLimits, Filter>;
+}
+
+type $GridSearch<
+  T extends unknown[][],
+  DepthLimits extends [number, number],
+  Filter extends HKT | undefined = undefined,
+> = GridSearchHelper<T, [DepthLimits[0], $<Add, [DepthLimits[1], 1]>], Filter>;
+
+type GridSearchHelper<
+  T extends unknown[][],
+  DepthLimits extends [number, number],
+  Filter extends HKT | undefined = undefined,
+  Position extends [number, number] = [0, 0],
+  Acc extends unknown[][] = [],
+> =
+  GridSearchAt<
+    T,
+    DepthLimits,
+    Filter,
+    Position,
+    [GetInGrid<T, Position>],
+    { [Key in $<MakeVisitedKey, Position>]: true }
+  > extends infer R extends unknown[][]
+    ? NextPosition<T, Position> extends infer Next
+      ? [Next] extends [never]
+        ? Acc
+        : Next extends [number, number]
+          ? GridSearchHelper<T, DepthLimits, Filter, Next, [...Acc, ...R]>
+          : never
+      : never
+    : never;
+
+type NextPosition<T extends unknown[][], Position extends [number, number]> =
+  $<Add, [Position[1], 1]> extends infer NextCol extends number
+    ? $<MakeRangeCheck<0, T[0]["length"]>, NextCol> extends true
+      ? [Position[0], NextCol]
+      : $<Add, [Position[0], 1]> extends infer NextRow extends number
+        ? $<MakeRangeCheck<0, T["length"]>, NextRow> extends true
+          ? [NextRow, 0]
+          : never
+        : never
+    : never;
+
+type GridVisited = Record<`${number},${number}`, true>;
+
+type GridSearchAt<
+  T extends unknown[][],
+  DepthLimits extends [number, number],
+  Filter extends HKT | undefined,
+  Position extends [number, number],
+  Path extends unknown[],
+  Visited extends GridVisited,
+> = (
+  $<MakeRangeCheck<DepthLimits[0], DepthLimits[1]>, Path["length"]> extends true
+    ? Filter extends HKT
+      ? $<Filter, Cast<Path, InputOf<Filter>>> extends true
+        ? [Path]
+        : []
+      : [Path]
+    : []
+) extends infer Current extends unknown[][]
+  ? (
+      $<Compare, [Path["length"], DepthLimits[1]]> extends CompareResult.Lt
+        ? GridNeighbors<T, Position, Visited> extends infer N extends Array<
+            [number, number]
+          >
+          ? GridSearchAtRecurse<T, DepthLimits, Filter, N, Path, Visited>
+          : []
+        : []
+    ) extends infer Recurse extends unknown[][]
+    ? [...Current, ...Recurse]
+    : never
+  : never;
+
+type GridSearchAtRecurse<
+  T extends unknown[][],
+  DepthLimits extends [number, number],
+  Filter extends HKT | undefined,
+  NextPositions extends Array<[number, number]>,
+  Path extends unknown[] = [],
+  Visited extends GridVisited = {},
+  Acc extends unknown[][] = [],
+> = NextPositions extends [
+  infer Head extends [number, number],
+  ...infer Rest extends Array<[number, number]>,
+]
+  ? GridSearchAt<
+      T,
+      DepthLimits,
+      Filter,
+      Head,
+      [...Path, GetInGrid<T, Head>],
+      Visited & { [Key in $<MakeVisitedKey, Head>]: true }
+    > extends infer R extends unknown[][]
+    ? GridSearchAtRecurse<
+        T,
+        DepthLimits,
+        Filter,
+        Rest,
+        Path,
+        Visited,
+        [...Acc, ...R]
+      >
+    : never
+  : Acc;
+
+type GetInGrid<
+  T extends unknown[][],
+  Position extends [number, number],
+> = Position[0] extends keyof T
+  ? Position[1] extends keyof T[Position[0]]
+    ? T[Position[0]][Position[1]]
+    : never
+  : never;
+
+type NeighborDeltas = $<
+  $<
+    Chain,
+    [
+      $<Repeat, 2>,
+      CartesianProduct,
+      $<Filter, $<Chain, [$<All, $<Equal, 0>>, Not]>>,
+    ]
+  >,
+  $<Range, [-1, 2]>
+>;
+
+type MakeRangeCheck<L extends number, R extends number> = $<
+  Chain,
+  [$<ApplyMany, [$<GreaterThanOrEquals, L>, $<LessThan, R>]>, $<All, Identity>]
+>;
+
+type MakeVisitedKey = $<Join, ",">;
+
+type GridNeighbors<
+  T extends unknown[][],
+  Position extends [number, number],
+  Visited extends GridVisited,
+> = $<
+  $<
+    Chain,
+    [
+      // Compute new positions
+      CartesianProduct,
+      $<MapWith, $<Chain, [Transpose, $<MapWith, Add>]>>,
+      // Remove positions out of bounds
+      $<
+        Filter,
+        $<
+          Chain,
+          [
+            $<
+              ApplyMany,
+              [
+                $<Chain, [$<At, 0>, MakeRangeCheck<0, T["length"]>]>,
+                $<Chain, [$<At, 1>, MakeRangeCheck<0, T[0]["length"]>]>,
+              ]
+            >,
+            $<All, Identity>,
+          ]
+        >
+      >,
+      // Remove visited positions
+      $<Filter, $<Chain, [MakeVisitedKey, $<InObject, Visited>, Not]>>,
+    ]
+  >,
+  [[Position], NeighborDeltas]
+>;
+
+export interface FlipObject extends HKT {
+  fn: (
+    input: Cast<this[_], Record<PropertyKey, PropertyKey>>,
+  ) => $FlipObject<typeof input>;
+}
+
+type $FlipObject<T extends Record<PropertyKey, PropertyKey>> = {
+  [P in keyof T as T[P] extends PropertyKey ? T[P] : string]: P extends keyof T
+    ? P
+    : never;
+};
+
+export interface MapObjectValues extends HKT {
+  fn: (input: Cast<this[_], HKT>) => MapObjectValuesImpl<typeof input>;
+}
+
+interface MapObjectValuesImpl<Op extends HKT> extends HKT {
+  fn: (
+    input: Cast<this[_], Record<PropertyKey, unknown>>,
+  ) => $MapObjectValues<typeof input, Op>;
+}
+
+type $MapObjectValues<
+  T extends Record<PropertyKey, unknown>,
+  Op extends HKT,
+> = {
+  [Key in keyof T]: $<Op, Cast<T[Key], InputOf<Op>>>;
+};
+
+export interface LookupObject extends HKT {
+  fn: (
+    input: Cast<this[_], Record<PropertyKey, unknown>>,
+  ) => LookupObjectImpl<typeof input>;
+}
+
+interface LookupObjectImpl<T extends Record<PropertyKey, unknown>> extends HKT {
+  fn: (
+    input: Cast<this[_], PropertyKey>,
+  ) => typeof input extends keyof T ? T[typeof input] : never;
+}
+
+export interface TopologicalSort extends HKT {
+  fn: (input: Cast<this[_], Graph>) => $TopologicalSort<typeof input>;
+}
+
+type GraphNode = PropertyKey;
+
+type GraphEdges = [GraphNode, GraphNode[]];
+
+type Graph = Array<GraphEdges>;
+
+type $TopologicalSort<G extends Graph> =
+  CalculateInDegrees<G> extends infer InDegrees extends Record<
+    GraphNode,
+    number
+  >
+    ? TopologicalSortHelper<G, InDegrees>
+    : never;
+
+type TopologicalSortHelper<
+  G extends Graph,
+  InDegrees extends Record<GraphNode, number>,
+  Used extends GraphNode = never,
+  Acc extends GraphNode[] = [],
+> =
+  TopologicalSortNext<G, InDegrees, Used> extends infer N
+    ? [N] extends [never]
+      ? Acc
+      : N extends PropertyKey
+        ? TopologicalSortHelper<
+            G,
+            TopologicalSortRemove<G, InDegrees, N>,
+            Used | N,
+            [...Acc, N]
+          >
+        : never
+    : never;
+
+type CalculateInDegrees<
+  G extends Graph,
+  Acc extends Record<GraphNode, number> = {},
+> = G extends [infer Head extends GraphEdges, ...infer Rest extends Graph]
+  ? CalculateInDegrees<Rest, InDegreesHelper<Head[1], Acc, 1>>
+  : Acc;
+
+type InDegreesHelper<
+  To extends GraphNode[],
+  Acc extends Record<GraphNode, number>,
+  Delta extends number,
+> = To extends [infer Head extends GraphNode, ...infer Rest extends GraphNode[]]
+  ? InDegreesHelper<
+      Rest,
+      Omit<Acc, Head> & {
+        [Key in Head]: $<Add, [Head extends keyof Acc ? Acc[Head] : 0, Delta]>;
+      },
+      Delta
+    >
+  : Acc;
+
+type TopologicalSortNext<
+  G extends Graph,
+  InDegrees extends Record<GraphNode, number>,
+  Used extends GraphNode,
+> = G extends [
+  infer Head extends GraphEdges,
+  ...infer Rest extends GraphEdges[],
+]
+  ? Head[0] extends Used
+    ? TopologicalSortNext<Rest, InDegrees, Used>
+    : Head[0] extends keyof InDegrees
+      ? $Equal<InDegrees[Head[0]], 0> extends true
+        ? Head[0]
+        : TopologicalSortNext<Rest, InDegrees, Used>
+      : Head[0]
+  : never;
+
+type TopologicalSortRemove<
+  G extends Graph,
+  InDegrees extends Record<GraphNode, number>,
+  N extends GraphNode,
+> =
+  $<$<Filter, $<Chain, [$<At, 0>, $<Equal, N>]>>, G> extends [
+    infer E extends GraphEdges,
+  ]
+    ? InDegreesHelper<E[1], InDegrees, -1>
+    : never;

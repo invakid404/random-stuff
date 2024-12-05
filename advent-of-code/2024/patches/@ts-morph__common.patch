@@ -1,8 +1,22 @@
 diff --git a/dist/typescript.js b/dist/typescript.js
-index 90f3266ee69f247b20bd892b1a975220489f094f..94190f84050f03e065ce6aa54904bd61c0f3d032 100644
+index 90f3266ee69f247b20bd892b1a975220489f094f..e0a6bd4ecc06bb185ac23f1b2aa5ed30aefbd95b 100644
 --- a/dist/typescript.js
 +++ b/dist/typescript.js
-@@ -65685,10 +65685,6 @@ function createTypeChecker(host) {
+@@ -64273,13 +64273,6 @@ function createTypeChecker(host) {
+           addElement(type, 8 /* Variadic */, (_b = target.labeledElementDeclarations) == null ? void 0 : _b[i]);
+         } else if (isTupleType(type)) {
+           const elements = getElementTypes(type);
+-          if (elements.length + expandedTypes.length >= 1e4) {
+-            error2(
+-              currentNode,
+-              isPartOfTypeNode(currentNode) ? Diagnostics.Type_produces_a_tuple_type_that_is_too_large_to_represent : Diagnostics.Expression_produces_a_tuple_type_that_is_too_large_to_represent
+-            );
+-            return errorType;
+-          }
+           forEach(elements, (t, n) => {
+             var _a2;
+             return addElement(t, type.target.elementFlags[n], (_a2 = type.target.labeledElementDeclarations) == null ? void 0 : _a2[n]);
+@@ -65685,10 +65678,6 @@ function createTypeChecker(host) {
      let extraTypes;
      let tailCount = 0;
      while (true) {
@@ -13,7 +27,7 @@ index 90f3266ee69f247b20bd892b1a975220489f094f..94190f84050f03e065ce6aa54904bd61
        const checkType = instantiateType(getActualTypeVariable(root.checkType), mapper);
        const extendsType = instantiateType(root.extendsType, mapper);
        if (checkType === errorType || extendsType === errorType) {
-@@ -66722,11 +66718,6 @@ function createTypeChecker(host) {
+@@ -66722,11 +66711,6 @@ function createTypeChecker(host) {
      if (!couldContainTypeVariables(type)) {
        return type;
      }

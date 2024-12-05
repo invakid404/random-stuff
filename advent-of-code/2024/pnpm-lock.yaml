@@ -6,7 +6,7 @@ settings:
 
 patchedDependencies:
   '@ts-morph/common':
-    hash: ycqrato3zdih2lgyi2jyxy56eu
+    hash: 2g4hzupbyilibi477xnbsqrbbq
     path: patches/@ts-morph__common.patch
 
 importers:
@@ -317,7 +317,7 @@ snapshots:
   '@esbuild/win32-x64@0.23.1':
     optional: true
 
-  '@ts-morph/common@0.25.0(patch_hash=ycqrato3zdih2lgyi2jyxy56eu)':
+  '@ts-morph/common@0.25.0(patch_hash=2g4hzupbyilibi477xnbsqrbbq)':
     dependencies:
       minimatch: 9.0.5
       path-browserify: 1.0.1
@@ -390,7 +390,7 @@ snapshots:
 
   ts-morph@24.0.0:
     dependencies:
-      '@ts-morph/common': 0.25.0(patch_hash=ycqrato3zdih2lgyi2jyxy56eu)
+      '@ts-morph/common': 0.25.0(patch_hash=2g4hzupbyilibi477xnbsqrbbq)
       code-block-writer: 13.0.3
 
   tsx@4.19.2:
