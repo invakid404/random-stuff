@@ -61,6 +61,12 @@ type $Map<
   ? $Map<Rest, Op, [...Acc, $<Op, Head>]>
   : Acc;
 
+export interface MapWith_ extends HKT {
+  fn: (
+    input: Cast<this[_], [HKT, any[]]>,
+  ) => $Map<(typeof input)[1], (typeof input)[0]>;
+}
+
 export interface Chain extends HKT {
   fn: (ops: Cast<this[_], HKT[]>) => ChainImpl<typeof ops>;
 }
@@ -305,7 +311,7 @@ type $DropAt<Array extends unknown[], Index extends number> =
     infer Left extends unknown[],
     infer Right extends unknown[],
   ]
-    ? [...Left, ...Tail<Right>]
+    ? [...Left, ...$Tail<Right>]
     : never;
 
 type SplitAt<
@@ -316,9 +322,9 @@ type SplitAt<
   ? [InitAccumulator, Arr]
   : InitAccumulator["length"] extends Index
     ? [InitAccumulator, Arr]
-    : SplitAt<Tail<Arr>, Index, [...InitAccumulator, Arr[0]]>;
+    : SplitAt<$Tail<Arr>, Index, [...InitAccumulator, Arr[0]]>;
 
-type Tail<T extends unknown[]> = T extends [unknown, ...infer T] ? T : never;
+type $Tail<T extends unknown[]> = T extends [unknown, ...infer T] ? T : never;
 
 type CompareWithDirection<
   A extends number,
@@ -727,7 +733,7 @@ type $Windows<
 > =
   Take<T, L> extends infer W extends unknown[]
     ? L extends W["length"]
-      ? $Windows<Tail<T>, L, [...Acc, W]>
+      ? $Windows<$Tail<T>, L, [...Acc, W]>
       : Acc
     : never;
 
@@ -883,19 +889,37 @@ export interface At extends HKT {
 }
 
 interface AtImpl<I extends number> extends HKT {
-  fn: (input: Cast<this[_], unknown[]>) => (typeof input)[I];
+  fn: (
+    input: Cast<this[_], unknown[]>,
+  ) => I extends keyof typeof input ? (typeof input)[I] : never;
+}
+
+export interface At_ extends HKT {
+  fn: (
+    input: Cast<this[_], [unknown[], number]>,
+  ) => (typeof input)[0][(typeof input)[1]];
 }
 
 export interface AtDeep extends HKT {
-  fn: (indices: Cast<this[_], number[]>) => $AtDeep<typeof indices>;
+  fn: (indices: Cast<this[_], number[]>) => AtDeepImpl<typeof indices>;
 }
 
-type $AtDeep<T extends number[], Acc extends HKT[] = []> = T extends [
+interface AtDeepImpl<I extends number[]> extends HKT {
+  fn: (input: Cast<this[_], unknown[]>) => $AtDeep<typeof input, I>;
+}
+
+type $AtDeep<T extends unknown[], I extends number[]> = I extends [
   infer Head extends number,
   ...infer Rest extends number[],
 ]
-  ? $AtDeep<Rest, [...Acc, $<At, Head>]>
-  : $<Chain, Acc>;
+  ? `${Head}` extends keyof T
+    ? 0 extends Rest["length"]
+      ? T[Head]
+      : T[Head] extends unknown[]
+        ? $AtDeep<T[Head], Rest>
+        : undefined
+    : undefined
+  : undefined;
 
 export interface Middle extends HKT {
   fn: (input: Cast<this[_], unknown[]>) => $Middle<typeof input>;
@@ -933,6 +957,10 @@ type $CartesianProduct<
   },
   1
 >;
+
+export interface Tail extends HKT {
+  fn: (input: Cast<this[_], unknown[]>) => $Tail<typeof input>;
+}
 
 export interface Tails extends HKT {
   fn: (input: Cast<this[_], unknown[]>) => $Tails<typeof input>;
@@ -1106,6 +1134,12 @@ export interface Repeat extends HKT {
 
 interface RepeatImpl<N extends number> extends HKT {
   fn: (input: Cast<this[_], unknown>) => $Repeat<typeof input, N>;
+}
+
+export interface Repeat_ extends HKT {
+  fn: (
+    input: Cast<this[_], [unknown, number]>,
+  ) => $Repeat<(typeof input)[0], (typeof input)[1]>;
 }
 
 export interface InObject extends HKT {
@@ -1582,3 +1616,27 @@ type TopologicalSortRemove<
   ]
     ? InDegreesHelper<E[1], InDegrees, -1>
     : never;
+
+export interface FindPositions2D extends HKT {
+  fn: (input: Cast<this[_], HKT>) => FindPositions2DImpl<typeof input>;
+}
+
+interface FindPositions2DImpl<Op extends HKT> extends HKT {
+  fn: (input: Cast<this[_], unknown[][]>) => $FindPositions2D<typeof input, Op>;
+}
+
+type $FindPositions2D<T extends unknown[][], Op extends HKT> = $<
+  $<Chain, [$<MapWith, UnionToTuple>, $<FlattenDepth, 1>]>,
+  {
+    [Row in keyof T]: {
+      [Col in keyof T[Row] & string as $<
+        Op,
+        Cast<T[Row][Col], InputOf<Op>>
+      > extends true
+        ? Col
+        : never]: $<$<MapWith, ToNumber>, [`${Row}`, `${Col}`]>;
+    } extends infer R
+      ? R[keyof R]
+      : never;
+  }
+>;
