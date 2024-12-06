@@ -1640,3 +1640,9 @@ type $FindPositions2D<T extends unknown[][], Op extends HKT> = $<
       : never;
   }
 >;
+
+export interface BooleanToNumber extends HKT {
+  fn: (
+    input: Cast<this[_], boolean>,
+  ) => $Equal<typeof input, true> extends true ? 1 : 0;
+}
