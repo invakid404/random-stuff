@@ -1,0 +1,10 @@
+name = "project_euler"
+version = "1.0.0"
+
+[dependencies]
+gleam_stdlib = ">= 0.34.0 and < 2.0.0"
+bravo = ">= 4.0.1 and < 5.0.0"
+recursive = ">= 2.0.0 and < 3.0.0"
+glearray = ">= 2.0.0 and < 3.0.0"
+
+[dev-dependencies]
