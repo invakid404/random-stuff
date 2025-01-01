@@ -1,4 +1,7 @@
+import gleam/float
+import gleam/int
 import gleam/list
+import gleam/result
 import gleam/yielder.{type Yielder}
 
 pub fn multiples_of(n: Int) {
@@ -19,4 +22,23 @@ pub fn skip_every(in: Yielder(a), n: Int) {
 
 pub fn sum(in: Yielder(Int)) {
   yielder.fold(in, 0, fn(acc, value) { acc + value })
+}
+
+pub fn n_divisors(n: Int) {
+  use sqrt_n <- result.try(int.square_root(n))
+  let sqrt_n = float.truncate(sqrt_n)
+
+  Ok(
+    yielder.range(1, sqrt_n)
+    |> yielder.filter(fn(x) { n % x == 0 })
+    |> yielder.fold(0, fn(acc, divisor) {
+      let other = n / divisor
+
+      acc
+      + case divisor == other {
+        True -> 1
+        False -> 2
+      }
+    }),
+  )
 }
