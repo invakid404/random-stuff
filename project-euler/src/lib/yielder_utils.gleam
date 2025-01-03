@@ -24,13 +24,38 @@ pub fn sum(in: Yielder(Int)) {
   yielder.fold(in, 0, fn(acc, value) { acc + value })
 }
 
-pub fn n_divisors(n: Int) {
+fn divisors_base(n: Int) {
   use sqrt_n <- result.try(int.square_root(n))
   let sqrt_n = float.truncate(sqrt_n)
 
   Ok(
     yielder.range(1, sqrt_n)
-    |> yielder.filter(fn(x) { n % x == 0 })
+    |> yielder.filter(fn(x) { n % x == 0 }),
+  )
+}
+
+pub fn divisors(n: Int) {
+  use base <- result.try(divisors_base(n))
+
+  Ok(
+    base
+    |> yielder.flat_map(fn(divisor) {
+      let other = n / divisor
+
+      case divisor == other {
+        True -> [divisor]
+        False -> [divisor, other]
+      }
+      |> yielder.from_list
+    }),
+  )
+}
+
+pub fn n_divisors(n: Int) {
+  use base <- result.try(divisors_base(n))
+
+  Ok(
+    base
     |> yielder.fold(0, fn(acc, divisor) {
       let other = n / divisor
 
