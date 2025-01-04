@@ -51,6 +51,18 @@ pub fn divisors(n: Int) {
   )
 }
 
+pub fn proper_divisors(n: Int) {
+  use divisors <- result.try(divisors(n))
+
+  divisors |> yielder.filter(fn(d) { n != d }) |> Ok
+}
+
+pub fn proper_divisors_sum(n: Int) {
+  use proper_divisors <- result.try(proper_divisors(n))
+
+  proper_divisors |> yielder.reduce(int.add)
+}
+
 pub fn n_divisors(n: Int) {
   use base <- result.try(divisors_base(n))
 
