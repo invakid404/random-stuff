@@ -79,3 +79,9 @@ pub fn n_divisors(n: Int) {
     }),
   )
 }
+
+pub fn fibonacci() {
+  #(0, 1)
+  |> yielder.unfold(fn(curr) { yielder.Next(curr, #(curr.1, curr.0 + curr.1)) })
+  |> yielder.map(fn(curr) { curr.0 })
+}
