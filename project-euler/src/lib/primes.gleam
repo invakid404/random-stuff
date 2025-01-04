@@ -5,6 +5,7 @@ import gleam/option
 import gleam/result
 import gleam/yielder
 import lib/dict
+import lib/yielder_utils
 
 pub fn primes() {
   let assert Ok(primes) = primes_from(2)
@@ -16,13 +17,13 @@ pub fn primes_from(from: Int) {
   case from {
     _ if from < 2 -> Error(Nil)
     _ -> {
-      let nums = yielder.unfold(from, fn(acc) { yielder.Next(acc, acc + 1) })
+      let factors = yielder_utils.infinite_range(2, 1)
 
-      nums
+      yielder_utils.infinite_range(from, 1)
       |> yielder.filter(fn(n) {
         let assert Ok(sqrt_n) = int.square_root(n) |> result.map(float.truncate)
 
-        nums
+        factors
         |> yielder.take_while(fn(p) { p <= sqrt_n })
         |> yielder.all(fn(p) { n % p != 0 })
       })
@@ -61,9 +62,14 @@ fn memoize_primes(up_to: Int) {
 }
 
 pub fn is_prime(n: Int) {
-  memoize_primes(n)
+  case n {
+    _ if n <= 1 -> False
+    _ -> {
+      memoize_primes(n)
 
-  dict.get(NumberIsPrime(n)) |> option.is_some
+      dict.get(NumberIsPrime(n)) |> option.is_some
+    }
+  }
 }
 
 pub fn prime_factors(n: Int) {

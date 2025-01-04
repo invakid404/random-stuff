@@ -4,8 +4,12 @@ import gleam/list
 import gleam/result
 import gleam/yielder.{type Yielder}
 
+pub fn infinite_range(from: Int, step: Int) {
+  yielder.unfold(from, fn(acc) { yielder.Next(acc, acc + step) })
+}
+
 pub fn multiples_of(n: Int) {
-  yielder.unfold(n, fn(acc) { yielder.Next(acc, acc + n) })
+  infinite_range(n, n)
 }
 
 pub fn up_to(in: Yielder(Int), target: Int) {
