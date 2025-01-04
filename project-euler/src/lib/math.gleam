@@ -1,3 +1,4 @@
+import gleam/int
 import gleam/option.{Some}
 import gleam/result
 import lib/dict
@@ -44,4 +45,19 @@ pub fn choose(n: Int, k: Int) {
   use c <- result.try(factorial(n - k))
 
   Ok(a / b / c)
+}
+
+pub fn pow(n: Int, p: Int) {
+  case p {
+    0 -> 1
+    _ -> {
+      let half = pow(n, int.bitwise_shift_right(p, 1))
+      let squared = half * half
+
+      case p % 2 {
+        0 -> squared
+        _ -> squared * n
+      }
+    }
+  }
 }
