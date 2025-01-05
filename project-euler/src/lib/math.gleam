@@ -61,3 +61,33 @@ pub fn pow(n: Int, p: Int) {
     }
   }
 }
+
+pub opaque type Fraction {
+  Fraction(numerator: Int, denominator: Int)
+}
+
+pub fn make_fraction(numerator: Int, denominator: Int) {
+  Fraction(numerator, denominator)
+}
+
+pub fn simplify_fraction(input: Fraction) {
+  let gcd = gcd(input.numerator, input.denominator)
+
+  Fraction(input.numerator / gcd, input.denominator / gcd)
+}
+
+pub fn multiply_fractions(left: Fraction, right: Fraction) {
+  Fraction(
+    left.numerator * right.numerator,
+    left.denominator * right.denominator,
+  )
+  |> simplify_fraction
+}
+
+pub fn numerator(input: Fraction) {
+  input.numerator
+}
+
+pub fn denominator(input: Fraction) {
+  input.denominator
+}
