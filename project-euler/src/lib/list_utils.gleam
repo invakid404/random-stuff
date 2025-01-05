@@ -1,5 +1,6 @@
 import gleam/list
 import gleam/result
+import gleam/yielder
 import lib/math.{factorial}
 
 pub fn nth_permutation(input: List(a), n: Int) {
@@ -32,5 +33,28 @@ fn nth_permutation_helper(input: List(a), n: Int, len: Int, result: List(a)) {
         _ -> Error(Nil)
       }
     }
+  }
+}
+
+pub fn rotations(input: List(a)) {
+  let n = list.length(input)
+
+  yielder.iterate(input, fn(curr) {
+    let assert Ok(next) = rotate_right(curr)
+
+    next
+  })
+  |> yielder.take(n)
+}
+
+pub fn rotate_right(input: List(a)) {
+  do_rotate_right(input, [])
+}
+
+fn do_rotate_right(input: List(a), acc: List(a)) {
+  case input {
+    [] -> Error(Nil)
+    [x] -> Ok([x, ..list.reverse(acc)])
+    [x, ..xs] -> do_rotate_right(xs, [x, ..acc])
   }
 }
