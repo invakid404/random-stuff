@@ -5,18 +5,13 @@ import gleam/result
 import gleam/string
 import gleam/yielder
 import lib/dict
+import lib/math
 import lib/yielder_utils
 
 // Products cannot:
 // - exceed 4 digits (we need the rest of the digits for the factors)
 // - start with a 9 (no valid factors make a product starting with 9)
 const upper_bound = 8976
-
-const digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
-
-fn contains_all_digits(input: String) {
-  list.all(digits, string.contains(input, _))
-}
 
 type SeenProduct {
   SeenProduct(Int)
@@ -32,7 +27,7 @@ pub fn main() {
       [curr.0, curr.1, curr.2]
       |> list.map(string.inspect)
       |> string.concat
-      |> contains_all_digits
+      |> math.is_pandigital_str
     })
   })
   |> yielder.map(fn(curr) { curr.2 })

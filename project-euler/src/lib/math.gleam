@@ -1,6 +1,8 @@
 import gleam/int
+import gleam/list
 import gleam/option.{Some}
 import gleam/result
+import gleam/string
 import lib/dict
 
 pub fn gcd(a: Int, b: Int) {
@@ -90,4 +92,14 @@ pub fn numerator(input: Fraction) {
 
 pub fn denominator(input: Fraction) {
   input.denominator
+}
+
+pub fn is_pandigital(input: Int) {
+  string.inspect(input) |> is_pandigital_str
+}
+
+const digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
+pub fn is_pandigital_str(input: String) {
+  list.all(digits, string.contains(input, _))
 }
