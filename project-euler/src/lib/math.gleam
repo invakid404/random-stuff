@@ -1,3 +1,4 @@
+import gleam/float
 import gleam/int
 import gleam/list
 import gleam/option.{Some}
@@ -95,11 +96,27 @@ pub fn denominator(input: Fraction) {
 }
 
 pub fn is_pandigital(input: Int) {
-  string.inspect(input) |> is_pandigital_str
+  is_n_pandigital(input, 9)
+}
+
+pub fn is_n_pandigital(input: Int, n_digits: Int) {
+  string.inspect(input) |> is_n_pandigital_str(n_digits)
 }
 
 const digits = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
 pub fn is_pandigital_str(input: String) {
-  list.all(digits, string.contains(input, _))
+  is_n_pandigital_str(input, 9)
+}
+
+pub fn is_n_pandigital_str(input: String, n_digits: Int) {
+  digits |> list.take(n_digits) |> list.all(string.contains(input, _))
+}
+
+pub fn is_triangle_number(n: Int) {
+  let m = 8 * n + 1
+  use sqrt_m <- result.try(int.square_root(m))
+  let sqrt_m = float.truncate(sqrt_m)
+
+  Ok(sqrt_m * sqrt_m == m)
 }
