@@ -89,3 +89,29 @@ pub fn fibonacci() {
   |> yielder.unfold(fn(curr) { yielder.Next(curr, #(curr.1, curr.0 + curr.1)) })
   |> yielder.map(fn(curr) { curr.0 })
 }
+
+pub fn permutations(list: List(a)) -> Yielder(List(a)) {
+  case list {
+    [] -> yielder.single([])
+    _ -> {
+      let list = yielder.from_list(list) |> yielder.index
+
+      list
+      |> yielder.flat_map(fn(i_pair) {
+        let #(i, i_idx) = i_pair
+
+        list
+        |> yielder.fold([], fn(acc, j_pair) {
+          let #(j, j_idx) = j_pair
+          case i_idx == j_idx {
+            True -> acc
+            False -> [j, ..acc]
+          }
+        })
+        |> list.reverse
+        |> permutations
+        |> yielder.map(fn(permutation) { [i, ..permutation] })
+      })
+    }
+  }
+}

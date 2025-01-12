@@ -2,9 +2,10 @@
 # You typically do not need to edit this file
 
 packages = [
-  { name = "bravo", version = "4.0.1", build_tools = ["gleam"], requirements = ["gleam_erlang", "gleam_stdlib"], otp_app = "bravo", source = "hex", outer_checksum = "D450DCD5A896ADDE442A93A7D6B5B2785374579A35416819E29E024887C2A872" },
+  { name = "bravo", version = "0.0.0", build_tools = ["gleam"], requirements = ["gleam_erlang", "gleam_stdlib"], source = "local", path = "vendor/bravo" },
   { name = "file_streams", version = "1.2.3", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "file_streams", source = "hex", outer_checksum = "CAD360FD2D5857883547EAAFFD9EBA1666637ECDB9DBA453738008098C29CA19" },
   { name = "gleam_erlang", version = "0.33.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "gleam_erlang", source = "hex", outer_checksum = "A1D26B80F01901B59AABEE3475DD4C18D27D58FA5C897D922FCB9B099749C064" },
+  { name = "gleam_otp", version = "0.16.0", build_tools = ["gleam"], requirements = ["gleam_erlang", "gleam_stdlib"], otp_app = "gleam_otp", source = "hex", outer_checksum = "FA0EB761339749B4E82D63016C6A18C4E6662DA05BAB6F1346F9AF2E679E301A" },
   { name = "gleam_stdlib", version = "0.51.0", build_tools = ["gleam"], requirements = [], otp_app = "gleam_stdlib", source = "hex", outer_checksum = "14AFA8D3DDD7045203D422715DBB822D1725992A31DF35A08D97389014B74B68" },
   { name = "gleam_yielder", version = "1.1.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "gleam_yielder", source = "hex", outer_checksum = "8E4E4ECFA7982859F430C57F549200C7749823C106759F4A19A78AEA6687717A" },
   { name = "glearray", version = "2.0.0", build_tools = ["gleam"], requirements = ["gleam_stdlib"], otp_app = "glearray", source = "hex", outer_checksum = "2CDF973B9ECE4A1AB8FBFB719AA37D9F3F1FF947B260C1B21ED5B608B52BC111" },
@@ -12,9 +13,10 @@ packages = [
 ]
 
 [requirements]
-bravo = { version = ">= 4.0.1 and < 5.0.0" }
+bravo = { path = "vendor/bravo" }
 file_streams = { version = ">= 1.2.3 and < 2.0.0" }
 gleam_erlang = { version = ">= 0.33.0 and < 1.0.0" }
+gleam_otp = { version = ">= 0.16.0 and < 1.0.0" }
 gleam_stdlib = { version = ">= 0.34.0 and < 2.0.0" }
 gleam_yielder = { version = ">= 1.1.0 and < 2.0.0" }
 glearray = { version = ">= 2.0.0 and < 3.0.0" }
