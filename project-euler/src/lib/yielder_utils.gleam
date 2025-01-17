@@ -1,6 +1,7 @@
 import gleam/float
 import gleam/int
 import gleam/list
+import gleam/option.{type Option, None, Some}
 import gleam/result
 import gleam/yielder.{type Yielder}
 
@@ -113,5 +114,92 @@ pub fn permutations(list: List(a)) -> Yielder(List(a)) {
         |> yielder.map(fn(permutation) { [i, ..permutation] })
       })
     }
+  }
+}
+
+type MergeState {
+  MergeState(
+    left: Yielder(Int),
+    right: Yielder(Int),
+    left_curr: Option(Int),
+    right_curr: Option(Int),
+  )
+}
+
+pub fn merge_non_decreasing(left: Yielder(Int), right: Yielder(Int)) {
+  let maybe_compare = fn(a: Option(Int), b: Option(Int)) {
+    case a, b {
+      Some(_), None -> True
+      None, Some(_) -> False
+      Some(a), Some(b) -> a <= b
+      _, _ -> panic as "unreachable"
+    }
+  }
+
+  let next = fn(in: Yielder(a)) {
+    case yielder.step(in) {
+      yielder.Next(in_head, rest) -> #(Some(in_head), rest)
+      _ -> #(None, in)
+    }
+  }
+
+  case yielder.step(left), yielder.step(right) {
+    yielder.Next(left_first, left), yielder.Next(right_first, right) ->
+      yielder.unfold(
+        MergeState(left, right, Some(left_first), Some(right_first)),
+        fn(acc) {
+          case acc.left_curr, acc.right_curr {
+            None, None -> yielder.Done
+            _, _ ->
+              case maybe_compare(acc.left_curr, acc.right_curr) {
+                True -> {
+                  let assert Some(left_curr) = acc.left_curr
+                  let #(left_next, left) = next(acc.left)
+                  yielder.Next(
+                    left_curr,
+                    MergeState(left, acc.right, left_next, acc.right_curr),
+                  )
+                }
+                False -> {
+                  let assert Some(right_curr) = acc.right_curr
+                  let #(right_next, right) = next(acc.right)
+                  yielder.Next(
+                    right_curr,
+                    MergeState(acc.left, right, acc.left_curr, right_next),
+                  )
+                }
+              }
+          }
+        },
+      )
+    yielder.Next(_, _), yielder.Done -> left
+    yielder.Done, yielder.Next(_, _) -> right
+    _, _ -> yielder.empty()
+  }
+}
+
+type FilterRepeatingState(a) {
+  FilterRepeatingState(curr: a, repetitions: Int)
+}
+
+pub fn filter_repeating(in: Yielder(a), n: Int) {
+  case yielder.step(in) {
+    yielder.Next(head, rest) ->
+      yielder.transform(rest, FilterRepeatingState(head, 1), fn(acc, curr) {
+        let #(next, next_n) = case curr == acc.curr {
+          True -> #(acc.curr, acc.repetitions + 1)
+          False -> #(curr, 1)
+        }
+
+        yielder.Next(
+          case next_n == n {
+            True -> Ok(next)
+            False -> Error(Nil)
+          },
+          FilterRepeatingState(next, next_n),
+        )
+      })
+      |> yielder.filter_map(fn(x) { x })
+    _ -> yielder.empty()
   }
 }

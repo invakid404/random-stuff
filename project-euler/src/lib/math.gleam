@@ -4,7 +4,9 @@ import gleam/list
 import gleam/option.{Some}
 import gleam/result
 import gleam/string
+import gleam/yielder
 import lib/dict
+import lib/yielder_utils
 
 pub fn gcd(a: Int, b: Int) {
   case b {
@@ -119,4 +121,19 @@ pub fn is_triangle_number(n: Int) {
   let sqrt_m = float.truncate(sqrt_m)
 
   Ok(sqrt_m * sqrt_m == m)
+}
+
+pub fn triangle_numbers() {
+  yielder_utils.infinite_range(1, 1)
+  |> yielder.map(fn(n) { { n * { n + 1 } } / 2 })
+}
+
+pub fn pentagonal_numbers() {
+  yielder_utils.infinite_range(1, 1)
+  |> yielder.map(fn(n) { { n * { 3 * n - 1 } } / 2 })
+}
+
+pub fn hexagonal_numbers() {
+  yielder_utils.infinite_range(1, 1)
+  |> yielder.map(fn(n) { n * { 2 * n - 1 } })
 }
