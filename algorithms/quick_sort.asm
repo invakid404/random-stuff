@@ -192,14 +192,14 @@ macro partition first, last {
     
     ; get pivot and base address
     lea r12, [parsed_input]    ; base address
-    mov r15, [r12 + first * 8] ; pivot value
+    mov r11, [r12 + first * 8] ; pivot value
     lea r13, [first + 1]       ; left index
     mov r8, [r12 + r13 * 8]    ; current left value
     
     for r14 = r13 to last
         mov r9, [r12 + r14 * 8]
         
-        cmp r9, r15 ; compare with pivot
+        cmp r9, r11 ; compare with pivot
         jge ..no_swap
 
         mov [r12 + r13 * 8], r9
