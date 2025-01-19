@@ -203,3 +203,36 @@ pub fn filter_repeating(in: Yielder(a), n: Int) {
     _ -> yielder.empty()
   }
 }
+
+pub fn step_n(in: Yielder(a), n: Int) {
+  step_n_helper(in, n, [])
+}
+
+fn step_n_helper(in: Yielder(a), n: Int, acc: List(a)) {
+  case n {
+    0 -> #(list.reverse(acc), in) |> Ok
+    _ ->
+      case yielder.step(in) {
+        yielder.Next(head, rest) -> step_n_helper(rest, n - 1, [head, ..acc])
+        _ -> Error(Nil)
+      }
+  }
+}
+
+pub fn window(in: Yielder(a), n: Int) {
+  use #(first, in) <- result.try(step_n(in, 1))
+  let assert [first] = first
+  use #(initial, in) <- result.try(step_n(in, n - 1))
+
+  let first_window = [first, ..initial]
+
+  yielder.single(first_window)
+  |> yielder.append(
+    in
+    |> yielder.transform(first_window, fn(acc, curr) {
+      let next = acc |> list.drop(1) |> list.append([curr])
+      yielder.Next(next, next)
+    }),
+  )
+  |> Ok
+}

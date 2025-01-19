@@ -137,3 +137,29 @@ pub fn hexagonal_numbers() {
   yielder_utils.infinite_range(1, 1)
   |> yielder.map(fn(n) { n * { 2 * n - 1 } })
 }
+
+fn divide_repeatedly(n: Int, d: Int) {
+  divide_repeatedly_helper(n, d, 0)
+}
+
+fn divide_repeatedly_helper(n: Int, d: Int, count: Int) {
+  case n % d {
+    0 -> divide_repeatedly_helper(n / d, d, count + 1)
+    _ -> #(n, count)
+  }
+}
+
+pub fn prime_factors(n: Int) {
+  yielder_utils.infinite_range(3, 2)
+  |> yielder.prepend(2)
+  |> yielder.transform(n, fn(n, factor) {
+    case n {
+      _ if n <= 1 -> yielder.Done
+      _ -> {
+        let #(n, amount) = divide_repeatedly(n, factor)
+        yielder.Next(#(factor, amount), n)
+      }
+    }
+  })
+  |> yielder.filter(fn(curr) { curr.1 > 0 })
+}
