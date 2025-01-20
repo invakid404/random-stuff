@@ -55,6 +55,7 @@ SYS_exit = 60
 
 STDIN_FILENO = 0
 STDOUT_FILENO = 1
+STDERR_FILENO = 2
 
 macro read fd, buf, count {
     do_syscall SYS_read, fd, buf, count
