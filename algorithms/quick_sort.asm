@@ -1,93 +1,9 @@
 format ELF64 executable
 
-macro syscall1 num, arg1 {
-    if num eqtype rax & num eq rax
-    else
-        mov rax, num
-    end if
-
-    if arg1 eqtype rdi & arg1 eq rdi
-    else
-        mov rdi, arg1
-    end if
-
-    syscall
-}
-
-macro syscall3 num, arg1, arg2, arg3 {
-    if num eqtype rax & num eq rax
-    else
-        mov rax, num
-    end if
-
-    if arg1 eqtype rdi & arg1 eq rdi
-    else
-        mov rdi, arg1
-    end if
-
-    if arg2 eqtype rsi & arg2 eq rsi
-    else
-        mov rsi, arg2
-    end if
-
-    if arg3 eqtype rdx & arg3 eq rdx
-    else
-        mov rdx, arg3
-    end if
-
-    syscall
-}
-
-macro for [p] {
-common
-    local ..start, ..end
-    ?START equ ..start
-    ?END equ ..end
-    define ?s 0
-    match =0 i==x =to n, ?s p \{
-        define ?s 1
-        ?INDEX equ i
-        mov i, x
-        ?START:
-        cmp i, n
-        jae ?END
-    \}
-    if ?s eq 0
-        'Syntax error' For
-    end if
-}
-
-macro endfor {
-    inc ?INDEX
-    jmp ?START
-    ?END:
-    restore ?START, ?END, ?INDEX
-}
-
-SYS_read equ 0
-SYS_write equ 1
-SYS_exit equ 60
-
-STDIN_FILENO equ 0
-STDOUT_FILENO equ 1
+include "../common/syscalls.asm"
+include "../common/for.asm"
 
 lf equ 0xA
-
-macro read fd, buf, count {
-    syscall3 SYS_read, fd, buf, count
-}
-
-macro write fd, buf, count {
-    syscall3 SYS_write, fd, buf, count
-}
-
-macro print buf, count {
-    write STDOUT_FILENO, buf, count
-}
-
-macro exit code {
-    syscall1 SYS_exit, code
-}
 
 segment readable executable
 
