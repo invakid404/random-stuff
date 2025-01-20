@@ -60,16 +60,11 @@ main:
         bt [r12], rcx
         jnc .skip
 
-        ; step size
-        mov rsi, rcx
-        dec rsi
-
         ; mark all multiples starting from its square as non-prime
         mov rdx, rcx
         imul rdx, rdx
-        for rdx = rdx to r14
+        for rdx = rdx to r14 step rcx
             btr [r12], rdx
-            add rdx, rsi
         endfor
     .skip:
     endfor

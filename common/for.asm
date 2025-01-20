@@ -4,9 +4,19 @@ common
     ?START equ ..start
     ?END equ ..end
     define ?s 0
+    match =0 i==x =to n =step s, ?s p \{
+        define ?s 1
+        ?INDEX equ i
+        ?STEP equ s
+        mov i, x
+        ?START:
+        cmp i, n
+        jae ?END
+    \}
     match =0 i==x =to n, ?s p \{
         define ?s 1
         ?INDEX equ i
+        ?STEP equ 1
         mov i, x
         ?START:
         cmp i, n
@@ -18,8 +28,12 @@ common
 }
 
 macro endfor {
-    inc ?INDEX
+    if ?STEP eq 1
+        inc ?INDEX
+    else
+        add ?INDEX, ?STEP
+    end if
     jmp ?START
     ?END:
-    restore ?START, ?END, ?INDEX
+    restore ?START, ?END, ?INDEX, ?STEP
 }
