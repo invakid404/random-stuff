@@ -8,7 +8,9 @@ common
         define ?s 1
         ?INDEX equ i
         ?STEP equ s
-        mov i, x
+        if ~(i eqtype x & i eq x)
+            mov i, x
+        end if
         ?START:
         cmp i, n
         jae ?END
@@ -17,7 +19,9 @@ common
         define ?s 1
         ?INDEX equ i
         ?STEP equ 1
-        mov i, x
+        if ~(i eqtype x & i eq x)
+            mov i, x
+        end if
         ?START:
         cmp i, n
         jae ?END
