@@ -67,6 +67,21 @@ pub fn pow(n: Int, p: Int) {
   }
 }
 
+pub fn modpow(n: Int, p: Int, m: Int) {
+  case p {
+    0 -> 1
+    _ -> {
+      let half = modpow(n, int.bitwise_shift_right(p, 1), m)
+      let squared = { half * half } % m
+
+      case p % 2 {
+        0 -> squared
+        _ -> { squared * n } % m
+      }
+    }
+  }
+}
+
 pub opaque type Fraction {
   Fraction(numerator: Int, denominator: Int)
 }
