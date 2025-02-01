@@ -50,7 +50,14 @@ macro print_game {
             ; check if snake
             is_snake r12, r13, rcx, rdx, ..snake, ..not_snake
         ..snake:
+            print escape_seq_prefix, escape_seq_prefix_len
+            print color_green, color_green_len
+
             print snake, 1
+
+            print escape_seq_prefix, escape_seq_prefix_len
+            print color_reset, color_reset_len
+
             jmp ..next
         ..not_snake:
             ; check if food
@@ -60,7 +67,13 @@ macro print_game {
             cmp_64_to_32 r13, dword [food_y]
             jne ..not_food
 
+            print escape_seq_prefix, escape_seq_prefix_len
+            print color_red, color_red_len
+
             print food, 1
+
+            print escape_seq_prefix, escape_seq_prefix_len
+            print color_reset, color_reset_len
             jmp ..next
         ..not_food:
             print empty, 1
@@ -389,6 +402,15 @@ newline_len = $-newline
 
 escape_seq_prefix db 27, '['
 escape_seq_prefix_len = $-escape_seq_prefix
+
+color_red db "31m"
+color_red_len = $-color_red
+
+color_green db "32m"
+color_green_len = $-color_green
+
+color_reset db "0m"
+color_reset_len = $-color_reset
 
 escape_seq_suffix db 'A'
 escape_seq_suffix_len = $-escape_seq_suffix
