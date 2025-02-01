@@ -371,6 +371,9 @@ main:
     ; print game over messaage
     print game_over, game_over_len    
 
+    ccall _print_int, qword [snake_positions_length]
+    print newline, newline_len
+
     exit 0    
 .error:
     exit 1
@@ -394,7 +397,7 @@ snake db '#'
 food  db '*'
 space db ' '
 
-game_over db "Game over!", 0xD, 0xA
+game_over db "Game over! Score: "
 game_over_len = $-game_over
 
 newline db 0xD, 0xA
